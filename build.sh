@@ -5,6 +5,7 @@ DEVELOPER="${DEVELOPER_DIR:-$(xcode-select -p)}"
 SDK="$DEVELOPER/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
 TOOL="$DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin"
 APP="${WATTLITE_APP:-$ROOT/build/WattLite.app}"
+mkdir -p "$ROOT/build"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 "$TOOL/clang" -isysroot "$SDK" -mmacosx-version-min=14.0 -O2 -Wall -Wextra -c "$ROOT/Sources/SMC.c" -o "$ROOT/build/SMC.o"
 FLAGS=(-parse-as-library -swift-version 5 -sdk "$SDK" -target arm64-apple-macosx14.0 -import-objc-header "$ROOT/Sources/SMC.h")
