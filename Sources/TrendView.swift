@@ -48,7 +48,7 @@ struct TrendView: View {
                 }
                 context.stroke(line, with: .color(.teal), style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
             }
-            .frame(height: 60)
+            .frame(height: 56)
             .overlay {
                 if values.isEmpty {
                     Text("等待有效采样").font(.system(size: 11)).foregroundStyle(.secondary)

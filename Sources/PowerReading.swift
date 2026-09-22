@@ -138,6 +138,12 @@ struct PowerReading: Equatable {
         return Self.knownAdapters["\(vendor):\(product)"]
     }
 
+    // 用户自定义资料/图片的键：第三方头用 VID:PID（唯一稳定），其余退回图片键
+    var adapterIdentityKey: String? {
+        if let vendor = adapterVendorHex, let product = adapterProductHex { return "\(vendor):\(product)" }
+        return adapterImageKey
+    }
+
     var adapterImageKey: String? {
         if let short = adapterShort?.lowercased() {
             let apple = adapterManufacturer?.lowercased().contains("apple") == true

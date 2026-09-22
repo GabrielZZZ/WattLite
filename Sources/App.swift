@@ -67,7 +67,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             statusWidthKey = worst
             let font = button.font ?? .monospacedDigitSystemFont(ofSize: 12, weight: .medium)
             let text = ceil((worst as NSString).size(withAttributes: [.font: font]).width)
-            statusItem.length = text + (button.image?.size.width ?? 0) + 20
+            statusItem.length = text + (button.image?.size.width ?? 0) + 8
         }
         let title = "\(tag)\(metric.prefix) \(marker)\(powerText(reading.watts(for: metric))) W"
         if button.title != title { button.title = title }
@@ -75,8 +75,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         if reading.connected == false, let remaining = reading.remainingText {
             tooltip += "\n预计剩余 \(remaining)"
         }
-        if let name = reading.adapterProfile?.name ?? reading.adapterName {
-            let model = (reading.adapterMarketingModel ?? reading.adapterProfile?.model).map { " · \($0)" } ?? ""
+        let userAdapter = AdapterLibrary.shared.entry(for: reading.adapterIdentityKey)
+        if let name = userAdapter?.name.nonEmpty ?? reading.adapterProfile?.name ?? reading.adapterName {
+            let model = (userAdapter?.model.nonEmpty ?? reading.adapterMarketingModel ?? reading.adapterProfile?.model).map { " · \($0)" } ?? ""
             tooltip += "\n\(name)\(model)"
         }
         if button.toolTip != tooltip { button.toolTip = tooltip }
