@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private let popover = NSPopover()
     private var inspectionWindow: NSWindow?
     private var statusWidthKey = ""
+    private var statusBolt: NSImage?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         store = PowerStore()
@@ -32,6 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             button.imagePosition = .imageLeading
             button.image = NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: nil)
             button.image?.isTemplate = true
+            statusBolt = button.image
             button.setAccessibilityLabel("WattLite 功率监测")
         }
         popover.behavior = .transient
@@ -82,6 +84,69 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         }
         if button.toolTip != tooltip { button.toolTip = tooltip }
         button.setAccessibilityValue(tooltip)
+        updateBoltAnimation(reading, on: button)
+    }
+
+    // 菜单栏 bolt 能量流动画：充电=光带快速上行，电池供电=下行，接电未充=慢速环境流。
+    // ponytail: 帧表查表播放。CA 自循环在菜单栏实测不合成（系统快照托管，动画冻住且蒙版错位），
+    // 只能逐帧设 image；实测 ~2% CPU/fps，故充/放电 12fps、待机环境流 6fps。减弱动态时静态。
+    private var animationMode = ""
+    private var chargeAnimator: Timer?
+    private var boltFrames: [NSImage] = []
+
+    private func updateBoltAnimation(_ reading: PowerReading, on button: NSStatusBarButton) {
+        guard let base = statusBolt else { return }
+        if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+            chargeAnimator?.invalidate()
+            chargeAnimator = nil
+            if button.image !== base { button.image = base }
+            return
+        }
+        let charging = reading.connected == true && reading.charging == true
+        let onBattery = reading.connected == false
+        let period = charging ? 1.5 : onBattery ? 2.2 : 6.0
+        let upward = !onBattery
+        let mode = "\(period)\(upward)"
+        guard mode != animationMode else { return }
+        animationMode = mode
+        chargeAnimator?.invalidate()
+        let fps = (charging || onBattery) ? 12.0 : 6.0
+        let frameCount = max(12, Int(period * fps))
+        boltFrames = (0..<frameCount).map { Self.boltFrame(base: base, progress: Double($0) / Double(frameCount), upward: upward) }
+        var index = 0
+        chargeAnimator = Timer.scheduledTimer(withTimeInterval: 1.0 / fps, repeats: true) { [weak self, weak button] timer in
+            MainActor.assumeIsolated {
+                guard let button, let self, !self.boltFrames.isEmpty else { timer.invalidate(); return }
+                button.image = self.boltFrames[index % self.boltFrames.count]
+                index += 1
+            }
+        }
+    }
+
+    private static func boltFrame(base: NSImage, progress: Double, upward: Bool) -> NSImage {
+        let size = base.size
+        let rect = NSRect(origin: .zero, size: size)
+        let bandHeight = size.height * 0.7
+        let travel = size.height + bandHeight * 2
+        let centerY = upward
+            ? -bandHeight + CGFloat(progress) * travel
+            : size.height + bandHeight - CGFloat(progress) * travel
+        // 光带裁进 bolt 形状：先画纵向 alpha 峰光带，再用 destinationIn 以 bolt 为蒙版裁切
+        let band = NSImage(size: size)
+        band.lockFocus()
+        let clear = NSColor.white.withAlphaComponent(0)
+        let peak = NSColor.white.withAlphaComponent(1)
+        NSGradient(colorsAndLocations: (clear, 0), (peak, 0.5), (clear, 1))?
+            .draw(in: NSRect(x: 0, y: centerY - bandHeight / 2, width: size.width, height: bandHeight), angle: 90)
+        base.draw(in: rect, from: .zero, operation: .destinationIn, fraction: 1)
+        band.unlockFocus()
+        let frame = NSImage(size: size)
+        frame.lockFocus()
+        base.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 0.5)
+        band.draw(in: rect, from: .zero, operation: .plusLighter, fraction: 0.9)
+        frame.unlockFocus()
+        frame.isTemplate = true
+        return frame
     }
 
     @objc private func togglePanel() {

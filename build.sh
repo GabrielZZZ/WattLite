@@ -29,15 +29,12 @@ if compgen -G "$ROOT/Assets/Adapters/*.png" >/dev/null; then
     mkdir -p "$APP/Contents/Resources/Adapters"
     cp "$ROOT"/Assets/Adapters/*.png "$APP/Contents/Resources/Adapters/"
 fi
-python3 - "$APP" <<'PY'
-import os, subprocess, sys
-for root, dirs, files in os.walk(sys.argv[1]):
-    for path in [root] + [os.path.join(root, name) for name in files]:
-        attributes = subprocess.check_output(['/usr/bin/xattr', path], text=True).splitlines()
-        for attribute in ('com.apple.FinderInfo', 'com.apple.ResourceFork'):
-            if attribute in attributes:
-                subprocess.run(['/usr/bin/xattr', '-d', attribute, path], check=True)
-PY
-codesign --force --sign - "$APP"
+# ponytail: Desktop 走 iCloud 同步，fileprovider 会在编译后异步给 bundle 补挂 fpfs/FinderInfo xattr，
+# codesign 视其为 detritus 拒签；清理+签名重试三次比一次性清理稳。
+for _ in 1 2 3; do
+    xattr -cr "$APP" 2>/dev/null || true
+    codesign --force --sign - "$APP" && codesign --verify --strict "$APP" && break
+    sleep 1
+done
 codesign --verify --strict "$APP"
 printf 'Built %s\n' "$APP"

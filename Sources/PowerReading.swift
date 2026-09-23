@@ -154,7 +154,7 @@ struct PowerReading: Equatable {
     }
 
     var batteryLabel: String {
-        (batteryWatts ?? 0) < -0.05 ? "电池净放电" : "电池净充电"
+        abs(batteryWatts ?? 0) < 0.05 ? "待机放电" : ((batteryWatts ?? 0) < 0 ? "电池净放电" : "电池净充电")
     }
 
     var remainingText: String? {

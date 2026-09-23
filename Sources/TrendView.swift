@@ -32,10 +32,14 @@ struct TrendView: View {
                 }
                 var line = Path()
                 var previous: Date?
+                var firstX: CGFloat?
+                var lastX: CGFloat = 0
                 for point in values {
                     let x = size.width * (1 - now.timeIntervalSince(point.date) / 600)
                     let y = size.height * (1 - (point.watts - lower) / (upper - lower))
                     let position = CGPoint(x: x, y: y)
+                    if firstX == nil { firstX = x }
+                    lastX = x
                     if metric == .input {
                         if let previous, point.date.timeIntervalSince(previous) <= max(5, interval * 3) {
                             line.addLine(to: position)
@@ -46,6 +50,18 @@ struct TrendView: View {
                     }
                     previous = point.date
                 }
+                if let firstX, metric == .input {
+                    var area = line
+                    area.addLine(to: CGPoint(x: lastX, y: size.height))
+                    area.addLine(to: CGPoint(x: firstX, y: size.height))
+                    area.closeSubpath()
+                    context.fill(area, with: .linearGradient(
+                        Gradient(colors: [.teal.opacity(0.22), .teal.opacity(0.02)]),
+                        startPoint: .zero, endPoint: CGPoint(x: 0, y: size.height)))
+                }
+                var glow = context
+                glow.addFilter(.shadow(color: .teal.opacity(0.5), radius: 3))
+                glow.stroke(line, with: .color(.teal), style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
                 context.stroke(line, with: .color(.teal), style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
             }
             .frame(height: 56)

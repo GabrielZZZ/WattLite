@@ -25,6 +25,7 @@ final class PowerStore: ObservableObject {
     private(set) var latest = PowerReading.unavailable("正在读取")
     private var points: [PowerPoint] = []
     private let reader = PowerReader()
+    private let log = PowerLog()
     private var timer: Timer?
     private var source: CFRunLoopSource?
     private var busy = false
@@ -95,6 +96,8 @@ final class PowerStore: ObservableObject {
                 history = points
             }
             onReading?(next)
+            let log = self.log
+            Task { await log.record(next) }
         }
     }
 
@@ -102,6 +105,7 @@ final class PowerStore: ObservableObject {
         sleeping = true
         generation += 1
         timer?.invalidate()
+        Task { [log] in await log.flush() }
     }
 
     @objc private func didWake() {
@@ -139,6 +143,10 @@ final class PowerStore: ObservableObject {
         sleeping = true
         generation += 1
         timer?.invalidate()
+        let log = self.log
+        let flushed = DispatchSemaphore(value: 0)
+        Task { await log.flush(); flushed.signal() }
+        _ = flushed.wait(timeout: .now() + 2)
         if let source { CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .commonModes) }
         NSWorkspace.shared.notificationCenter.removeObserver(self)
     }

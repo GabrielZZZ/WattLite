@@ -46,10 +46,12 @@ struct PanelView: View {
     @State private var editingAdapter = false
     @State private var information = false
     private var reading: PowerReading { store.reading }
-    // 断接时输入侧无数据，面板整体回落到电池口径，保证有数可看
-    private var effectiveMetric: PowerMetric { reading.connected == false ? .battery : store.metric }
-    private var cardShowsBattery: Bool { store.metric == .input || reading.connected == false }
+    // 接电时输入为主数字、电池降为副行；断接时输入侧无数据，回落电池口径
+    private var effectiveMetric: PowerMetric { reading.connected == false ? .battery : .input }
     private var watts: Double? { reading.watts(for: effectiveMetric) }
+    private var isCharging: Bool { reading.connected == true && reading.charging == true }
+    @State private var dotPulse = false
+    private static let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -57,6 +59,7 @@ struct PanelView: View {
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(Style.accent)
+                    .symbolEffect(.pulse, options: .repeating, isActive: isCharging && !Self.reduceMotion)
                     .frame(width: 32, height: 32)
                     .background(Style.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
                 Text("WattLite").font(.system(size: 15, weight: .semibold))
@@ -117,9 +120,6 @@ struct PanelView: View {
 
     private var dashboard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Picker("菜单栏显示指标", selection: $store.metric) {
-                ForEach(PowerMetric.allCases) { metric in Text(metric.title).tag(metric) }
-            }.labelsHidden().pickerStyle(.segmented)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(powerText(watts))
@@ -139,25 +139,24 @@ struct PanelView: View {
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel("\(effectiveMetric.title) \(powerText(watts)) 瓦")
                 HStack(spacing: 6) {
-                    Circle().fill(reading.connected == true ? Style.accent : Color.secondary).frame(width: 6, height: 6)
+                    Circle().fill(reading.connected == true ? Style.accent : Color.secondary)
+                        .frame(width: 6, height: 6)
+                        .scaleEffect(isCharging && dotPulse && !Self.reduceMotion ? 1.45 : 1)
+                        .shadow(color: isCharging && !Self.reduceMotion ? Style.accent.opacity(dotPulse ? 0.9 : 0.3) : .clear,
+                                radius: dotPulse ? 5 : 2)
+                        .onAppear {
+                            withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { dotPulse = true }
+                        }
                     Text(reading.state).font(.system(size: 12, weight: .medium))
                     Spacer()
                     Text(effectiveMetric == .input && reading.inputIsLive ? "实时读取" : "系统采样")
                         .font(.system(size: 10)).foregroundStyle(.secondary)
                 }
+                Text(batteryLine).font(.system(size: 11)).foregroundStyle(.secondary)
             }
-            HStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(cardShowsBattery ? reading.batteryLabel : "Mac 输入")
-                        .font(.system(size: 12, weight: .medium))
-                    Text(cardShowsBattery ? batteryAge : sourceCaption)
-                        .font(.system(size: 10)).foregroundStyle(.secondary)
-                }
-                Spacer()
-                let other = cardShowsBattery ? reading.batteryWatts.map(abs) : reading.inputWatts
-                Text("\(powerText(other)) W").font(.system(size: 21, weight: .medium, design: .rounded)).monospacedDigit()
-            }
-            .padding(10).background(Style.surface, in: RoundedRectangle(cornerRadius: Style.cardRadius))
+            // 粒子跟电池数据走，常驻主数字块（动效包规格：动效落在带电池数字的面上）
+            .background(CardParticles(watts: reading.batteryWatts ?? 0, animate: !Self.reduceMotion)
+                .clipShape(RoundedRectangle(cornerRadius: Style.cardRadius)))
             TrendView(points: store.history, metric: effectiveMetric, now: reading.capturedAt, interval: store.interval)
             VStack(spacing: 5) {
                 detail("输入电压", reading.inputVolts.map { String(format: "%.2f V", $0) } ?? "—")
@@ -198,7 +197,7 @@ struct PanelView: View {
             if let issue = reading.issue {
                 Text(issue).font(.system(size: 10)).foregroundStyle(.secondary)
             } else {
-                Text(effectiveMetric == .battery ? "正值为充电，负值为放电 · \(batteryAge)" : "输入与电池采样不同步，不作功率差值推算。")
+                Text("电池净功率正值为充电、负值为放电；与输入采样不同步，不作差值推算。")
                     .font(.system(size: 10)).foregroundStyle(.secondary)
             }
         }
@@ -207,6 +206,11 @@ struct PanelView: View {
     private var batteryAge: String {
         guard let date = reading.batteryUpdatedAt else { return "系统采样时间未知" }
         return "系统采样 · \(max(0, Int(reading.capturedAt.timeIntervalSince(date)))) 秒前"
+    }
+
+    private var batteryLine: String {
+        guard reading.connected == true, reading.batteryWatts != nil else { return batteryAge }
+        return "\(reading.batteryLabel) \(powerText(reading.batteryWatts.map(abs))) W · \(batteryAge)"
     }
 
     // 用户条目只要有任一文字字段就算“有资料”，纯图片条目仍回落到系统/内置信息
@@ -334,6 +338,93 @@ struct PanelView: View {
             Text("WattLite 1.0\n只读电源数据，不控制充电，不保存历史到磁盘。")
                 .font(.caption).foregroundStyle(.secondary).lineSpacing(5)
         }
+    }
+}
+
+// 电池卡粒子场，移植自 wattlite-battery-card 组件：充电上行、放电下沉、待机低速下沉，
+// 密度/速度/亮度随功率增长；文字区按组件的 fade 带避让。深浅色 tint 同组件。
+// ponytail: 无状态版——位置由 (t*speed+offset) mod 行程 算出，省掉粒子数组、随机游走与簇状重生，观感等价。
+private struct CardParticles: View {
+    var watts: Double
+    var animate: Bool
+    @Environment(\.colorScheme) private var scheme
+
+    private var charging: Bool { watts > 0.05 }
+    private var intensity: CGFloat {
+        charging ? CGFloat(min(1, max(0, watts / 65)))
+                 : (abs(watts) < 0.05 ? 0.24 : CGFloat(min(1, max(0.18, abs(watts) / 65))))
+    }
+    private var tint: Color {
+        if charging {
+            return Color(red: 0, green: (scheme == .dark ? 211 : 169) / 255, blue: (scheme == .dark ? 220 : 190) / 255)
+        }
+        return Color(red: (scheme == .dark ? 132 : 105) / 255, green: (scheme == .dark ? 163 : 132) / 255,
+                     blue: (scheme == .dark ? 231 : 198) / 255)
+    }
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: !animate)) { timeline in
+            Canvas { context, size in
+                let t = CGFloat(timeline.date.timeIntervalSinceReferenceDate)
+                let w = size.width, h = size.height
+                let widthFactor = min(1.3, max(0.65, w / 680))
+                let density: CGFloat = (charging ? 24 + 48 * intensity : 17 + 33 * intensity) * widthFactor
+                let span = h * (charging ? 0.77 : 0.94)
+                for i in 0..<Int(density) {
+                    let h1 = Self.hash(i, 1), h2 = Self.hash(i, 2), h3 = Self.hash(i, 3), h4 = Self.hash(i, 4)
+                    let h5 = Self.hash(i, 5), h6 = Self.hash(i, 6), h7 = Self.hash(i, 7), h8 = Self.hash(i, 8)
+                    let fast = h1 < 0.17, slow = !fast && h2 < 0.24
+                    let band: CGFloat = slow ? 11 + 8 * h3 : fast ? 43 + 23 * h3 : 21 + 16 * h3
+                    let speed = band * (0.84 + intensity * 0.48) * (charging ? 1 : 0.68)
+                    let radius = (1.25 + 1.55 * h4) * (h5 < 0.12 ? 1.35 : 1)
+                    let wobble = CGFloat(sin(Double(t) * Double(1.2 + 2.6 * h7) + Double(i))) * 5
+                    let x = w * (0.03 + 0.94 * h6) + wobble
+                    let travel = (t * speed + h * h8).truncatingRemainder(dividingBy: span)
+                    let y = charging ? h * 1.02 - travel : -h * 0.02 + travel
+                    let progress = y / h
+                    let fade: CGFloat = charging
+                        ? min(1, max(0, (progress - 0.25) / 0.38)) * min(1, max(0, (1.02 - progress) / 0.10))
+                        : min(1, max(0, progress / 0.10)) * min(1, max(0, (0.92 - progress) / 0.28))
+                    let alpha = Double((0.55 + 0.29 * h4) * fade)
+                    guard alpha > 0.01 else { continue }
+                    if fast || h7 < 0.29 {
+                        let len = radius * (speed > 39 ? 8 : 5)
+                        let tailY = y + (charging ? len : -len)
+                        var tail = Path()
+                        tail.move(to: CGPoint(x: x, y: y + (charging ? 1 : -1)))
+                        tail.addLine(to: CGPoint(x: x, y: tailY))
+                        context.stroke(tail, with: .linearGradient(
+                            Gradient(colors: [tint.opacity(alpha * 0.42), tint.opacity(0)]),
+                            startPoint: CGPoint(x: x, y: y), endPoint: CGPoint(x: x, y: tailY)),
+                            style: StrokeStyle(lineWidth: max(1, radius * 0.65), lineCap: .round))
+                    }
+                    let glow = h8 < 0.61
+                    if glow {
+                        let outer = radius * 5.8
+                        context.fill(Path(ellipseIn: CGRect(x: x - outer, y: y - outer, width: outer * 2, height: outer * 2)),
+                                     with: .radialGradient(
+                                        Gradient(stops: [.init(color: tint.opacity(alpha * 0.44), location: 0),
+                                                         .init(color: tint.opacity(alpha * 0.15), location: 0.38),
+                                                         .init(color: tint.opacity(0), location: 1)]),
+                                        center: CGPoint(x: x, y: y), startRadius: 0, endRadius: outer))
+                    }
+                    context.fill(Path(ellipseIn: CGRect(x: x - radius, y: y - radius, width: radius * 2, height: radius * 2)),
+                                 with: .color(tint.opacity(alpha)))
+                    if glow && radius > 2.1 {
+                        let c = radius * 0.32
+                        context.fill(Path(ellipseIn: CGRect(x: x - c, y: y - c, width: c * 2, height: c * 2)),
+                                     with: .color(Color(red: 213 / 255, green: 1, blue: 1).opacity(alpha * 0.77)))
+                    }
+                }
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private static func hash(_ i: Int, _ salt: Int) -> CGFloat {
+        let v = sin(Double(i + 1) * 127.1 + Double(salt) * 311.7) * 43758.5453
+        return CGFloat(v - floor(v))
     }
 }
 
