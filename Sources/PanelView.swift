@@ -70,14 +70,16 @@ struct PanelView: View {
                         .accessibilityLabel("电量 \(percentage)%")
                 }
             }
-            ScrollView(.vertical, showsIndicators: false) {
-                if editingAdapter {
+            // ponytail: 仪表盘不滚动——卡片拉伸吃掉空白；只有会溢出的设置/编辑走 ScrollView。
+            // 外层高度必须固定：popover 跟 SwiftUI ideal size 走，maxHeight 会让 ScrollView ideal 反馈震荡。
+            if editingAdapter {
+                ScrollView(.vertical, showsIndicators: false) {
                     AdapterEditor(reading: reading) { editingAdapter = false }
-                } else if settings {
-                    settingsContent
-                } else {
-                    dashboard
                 }
+            } else if settings {
+                ScrollView(.vertical, showsIndicators: false) { settingsContent }
+            } else {
+                dashboard
             }
             Divider()
             HStack {
@@ -200,6 +202,7 @@ struct PanelView: View {
                 Text("电池净功率正值为充电、负值为放电；与输入采样不同步，不作差值推算。")
                     .font(.system(size: 10)).foregroundStyle(.secondary)
             }
+            sessionCard
         }
     }
 
@@ -211,6 +214,50 @@ struct PanelView: View {
     private var batteryLine: String {
         guard reading.connected == true, reading.batteryWatts != nil else { return batteryAge }
         return "\(reading.batteryLabel) \(powerText(reading.batteryWatts.map(abs))) W · \(batteryAge)"
+    }
+
+    private var sessionCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(reading.connected == true ? "本次接通输入能量" : "本次断接放出能量")
+                    .font(.system(size: 12, weight: .medium))
+                Spacer()
+                Text("\(String(format: "%.1f", store.session.wh)) Wh")
+                    .font(.system(size: 22, weight: .medium, design: .rounded)).monospacedDigit()
+            }
+            Spacer(minLength: 0)
+            HStack(alignment: .firstTextBaseline, spacing: 18) {
+                sessionStat("时长", durationText(store.session.seconds))
+                sessionStat("平均功率", store.session.averageWatts.map { "\(String(format: "%.1f", $0)) W" } ?? "—")
+                Spacer()
+                Text(sessionEta).font(.system(size: 11)).foregroundStyle(.secondary)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Style.surface, in: RoundedRectangle(cornerRadius: Style.cardRadius))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("本次会话能量 \(String(format: "%.1f", store.session.wh)) 瓦时")
+    }
+
+    private func sessionStat(_ label: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label).font(.system(size: 10)).foregroundStyle(.secondary)
+            Text(value).font(.system(size: 13, weight: .medium)).monospacedDigit()
+        }
+    }
+
+    private func durationText(_ seconds: Double) -> String {
+        let minutes = Int(seconds) / 60
+        return minutes >= 60 ? "\(minutes / 60) 小时 \(minutes % 60) 分" : "\(minutes) 分"
+    }
+
+    private var sessionEta: String {
+        if reading.connected == true {
+            if reading.charging == true, let eta = reading.remainingText { return "系统预计 \(eta)充满" }
+            return "未充电"
+        }
+        return reading.remainingText.map { "预计剩余 \($0)" } ?? "电池供电"
     }
 
     // 用户条目只要有任一文字字段就算“有资料”，纯图片条目仍回落到系统/内置信息

@@ -66,7 +66,20 @@ struct Checks {
         let machine = MachineInfo.shared
         precondition(!machine.name.isEmpty && !machine.imageKey.isEmpty)
         precondition(machine.coreText.contains("核 CPU") && machine.coreText.contains("核 GPU"))
-        print("PASS: units, capacity vs actual power, zero charging, signed discharge, unplug, stale/missing data, formatting")
+        var session = SessionEnergy()
+        let step = Double(10) / 3600
+        session.add(connected: true, watts: 60, at: now)
+        precondition(session.wh == 0)
+        session.add(connected: true, watts: 60, at: now.addingTimeInterval(10))
+        precondition(abs(session.wh - 60 * step) < 1e-9 && session.seconds == 10
+                     && abs((session.averageWatts ?? 0) - 60) < 1e-9)
+        session.add(connected: true, watts: 60, at: now.addingTimeInterval(100))
+        precondition(abs(session.wh - 60 * step) < 1e-9)
+        session.add(connected: false, watts: 18, at: now.addingTimeInterval(110))
+        precondition(session.wh == 0 && session.seconds == 0 && session.averageWatts == nil)
+        session.add(connected: false, watts: 18, at: now.addingTimeInterval(120))
+        precondition(abs(session.wh - 18 * step) < 1e-9)
+        print("PASS: units, capacity vs actual power, zero charging, signed discharge, unplug, stale/missing data, formatting, session energy")
         if CommandLine.arguments.contains("--live") {
             let reader = PowerReader()
             for index in 0..<8 {

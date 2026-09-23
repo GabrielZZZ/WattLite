@@ -283,3 +283,29 @@ struct MachineInfo {
         name.lowercased().split(whereSeparator: { !$0.isLetter && !$0.isNumber }).joined(separator: "-")
     }
 }
+
+// ponytail: 矩形积分（上次功率 × dt）；>30s 的缺口（睡眠、采样中断）不计，
+// 所以睡过一觉的接通累计会偏低——要准就得落盘记起点，YAGNI。
+struct SessionEnergy {
+    private(set) var wh = 0.0
+    private(set) var seconds = 0.0
+    private var lastAt: Date?
+    private var lastConnected: Bool?
+
+    mutating func add(connected: Bool, watts: Double, at: Date) {
+        if let lastAt, connected == lastConnected {
+            let dt = at.timeIntervalSince(lastAt)
+            if dt > 0, dt < 30 {
+                wh += watts * dt / 3600
+                seconds += dt
+            }
+        } else {
+            wh = 0
+            seconds = 0
+        }
+        self.lastAt = at
+        lastConnected = connected
+    }
+
+    var averageWatts: Double? { seconds > 0 ? wh / (seconds / 3600) : nil }
+}

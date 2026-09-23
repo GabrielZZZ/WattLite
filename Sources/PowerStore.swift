@@ -21,6 +21,7 @@ final class PowerStore: ObservableObject {
     }
     @Published private(set) var loginEnabled = SMAppService.mainApp.status == .enabled
     @Published var loginMessage: String?
+    @Published private(set) var session = SessionEnergy()
     var onReading: ((PowerReading) -> Void)?
     private(set) var latest = PowerReading.unavailable("正在读取")
     private var points: [PowerPoint] = []
@@ -91,6 +92,10 @@ final class PowerStore: ObservableObject {
             points.removeAll { next.capturedAt.timeIntervalSince($0.date) > 600 }
             if points.count > 1300 { points.removeFirst(points.count - 1300) }
             latest = next
+            let connected = next.connected == true
+            session.add(connected: connected,
+                        watts: connected ? next.inputWatts ?? 0 : max(0, -(next.batteryWatts ?? 0)),
+                        at: next.capturedAt)
             if visible {
                 reading = next
                 history = points
