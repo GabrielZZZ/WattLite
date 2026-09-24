@@ -39,7 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         popover.behavior = .transient
         popover.animates = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         popover.delegate = self
-        popover.contentSize = NSSize(width: 380, height: 740)
+        popover.contentSize = NSSize(width: 380, height: 724)
         store.onReading = { [weak self] value in self?.updateStatus(value) }
         updateStatus(store.latest)
         if CommandLine.arguments.contains("--inspect") {
@@ -48,7 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             let window = NSWindow(contentViewController: controller)
             window.title = "WattLite"
             window.styleMask = [.titled, .closable]
-            window.setContentSize(NSSize(width: 380, height: 740))
+            window.setContentSize(NSSize(width: 380, height: 724))
             window.center()
             window.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)

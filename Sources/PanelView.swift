@@ -11,7 +11,6 @@ private enum Style {
     static let canvas = Color(nsColor: .windowBackgroundColor)
     // 两张产品卡共用：缩略图同尺寸、文字块同高且顶对齐，保证上下卡片文字对齐、卡片等大
     static let cardThumb = CGSize(width: 76, height: 56)
-    static let cardTextHeight: CGFloat = 48
 }
 
 // 只缓存命中的图；未命中每秒重探一次，用户放入图片后无需重启
@@ -70,8 +69,7 @@ struct PanelView: View {
                         .accessibilityLabel("电量 \(percentage)%")
                 }
             }
-            // ponytail: 仪表盘不滚动——卡片拉伸吃掉空白；只有会溢出的设置/编辑走 ScrollView。
-            // 外层高度必须固定：popover 跟 SwiftUI ideal size 走，maxHeight 会让 ScrollView ideal 反馈震荡。
+            // ponytail: 高度恒定（minHeight + 趋势图吸收余量），popover 才不会随内容涨缩上下抖
             if editingAdapter {
                 ScrollView(.vertical, showsIndicators: false) {
                     AdapterEditor(reading: reading) { editingAdapter = false }
@@ -99,7 +97,8 @@ struct PanelView: View {
             .buttonStyle(.borderless)
         }
         .padding(Style.inset)
-        .frame(width: 380, height: 740)
+        .frame(width: 380)
+        .frame(minHeight: 724)
         .background(Style.canvas)
         .tint(Style.accent)
     }
@@ -176,8 +175,7 @@ struct PanelView: View {
                         Text(adapterSubtitle).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    .frame(height: Style.cardTextHeight, alignment: .top)
-                    Spacer()
+                                        Spacer()
                     VStack(alignment: .trailing, spacing: 6) {
                         Text(reading.adapterWatts.map { String(format: "%.0f W", $0) } ?? "—")
                             .font(.system(size: 15, weight: .medium, design: .rounded)).monospacedDigit()
@@ -225,16 +223,13 @@ struct PanelView: View {
                 Text("\(String(format: "%.1f", store.session.wh)) Wh")
                     .font(.system(size: 22, weight: .medium, design: .rounded)).monospacedDigit()
             }
-            Spacer(minLength: 0)
             HStack(alignment: .firstTextBaseline, spacing: 18) {
                 sessionStat("时长", durationText(store.session.seconds))
                 sessionStat("平均功率", store.session.averageWatts.map { "\(String(format: "%.1f", $0)) W" } ?? "—")
-                Spacer()
-                Text(sessionEta).font(.system(size: 11)).foregroundStyle(.secondary)
             }
         }
         .padding(12)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Style.surface, in: RoundedRectangle(cornerRadius: Style.cardRadius))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("本次会话能量 \(String(format: "%.1f", store.session.wh)) 瓦时")
@@ -249,16 +244,9 @@ struct PanelView: View {
 
     private func durationText(_ seconds: Double) -> String {
         let minutes = Int(seconds) / 60
-        return minutes >= 60 ? "\(minutes / 60) 小时 \(minutes % 60) 分" : "\(minutes) 分"
+        return minutes >= 60 ? "\(minutes / 60) 小时 \(minutes % 60) 分" : (minutes > 0 ? "\(minutes) 分" : "不足 1 分")
     }
 
-    private var sessionEta: String {
-        if reading.connected == true {
-            if reading.charging == true, let eta = reading.remainingText { return "系统预计 \(eta)充满" }
-            return "未充电"
-        }
-        return reading.remainingText.map { "预计剩余 \($0)" } ?? "电池供电"
-    }
 
     // 用户条目只要有任一文字字段就算“有资料”，纯图片条目仍回落到系统/内置信息
     private var userAdapterEntry: AdapterLibrary.Entry? {
@@ -307,8 +295,7 @@ struct PanelView: View {
                 Text(machine.subtitle).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(height: Style.cardTextHeight, alignment: .top)
-            Spacer()
+                        Spacer()
             if reading.connected == false {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("预计剩余").font(.system(size: 9)).foregroundStyle(.secondary)

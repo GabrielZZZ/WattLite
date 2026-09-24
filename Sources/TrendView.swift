@@ -24,10 +24,13 @@ struct TrendView: View {
                 Text("\(Int(upper)) W").font(.system(size: 10)).foregroundStyle(.secondary)
             }
             Canvas { context, size in
+                // ponytail: 上下各留 3pt，值贴上/下界的点不被裁半
+                let pad: CGFloat = 3
+                let plotH = size.height - 2 * pad
                 for fraction in [0.0, 0.5, 1.0] {
                     var rule = Path()
-                    rule.move(to: CGPoint(x: 0, y: size.height * fraction))
-                    rule.addLine(to: CGPoint(x: size.width, y: size.height * fraction))
+                    rule.move(to: CGPoint(x: 0, y: pad + plotH * fraction))
+                    rule.addLine(to: CGPoint(x: size.width, y: pad + plotH * fraction))
                     context.stroke(rule, with: .color(.secondary.opacity(0.15)), style: StrokeStyle(lineWidth: 0.5, dash: [3, 4]))
                 }
                 var line = Path()
@@ -36,7 +39,7 @@ struct TrendView: View {
                 var lastX: CGFloat = 0
                 for point in values {
                     let x = size.width * (1 - now.timeIntervalSince(point.date) / 600)
-                    let y = size.height * (1 - (point.watts - lower) / (upper - lower))
+                    let y = pad + plotH * (1 - (point.watts - lower) / (upper - lower))
                     let position = CGPoint(x: x, y: y)
                     if firstX == nil { firstX = x }
                     lastX = x
@@ -52,21 +55,21 @@ struct TrendView: View {
                 }
                 if let firstX, metric == .input {
                     var area = line
-                    area.addLine(to: CGPoint(x: lastX, y: size.height))
-                    area.addLine(to: CGPoint(x: firstX, y: size.height))
+                    area.addLine(to: CGPoint(x: lastX, y: pad + plotH))
+                    area.addLine(to: CGPoint(x: firstX, y: pad + plotH))
                     area.closeSubpath()
                     context.fill(area, with: .linearGradient(
                         Gradient(colors: [.teal.opacity(0.22), .teal.opacity(0.02)]),
-                        startPoint: .zero, endPoint: CGPoint(x: 0, y: size.height)))
+                        startPoint: .zero, endPoint: CGPoint(x: 0, y: pad + plotH)))
                 }
                 var glow = context
                 glow.addFilter(.shadow(color: .teal.opacity(0.5), radius: 3))
                 glow.stroke(line, with: .color(.teal), style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
                 context.stroke(line, with: .color(.teal), style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
             }
-            .frame(height: 56)
+            .frame(minHeight: 56, maxHeight: .infinity)
             .overlay {
-                if values.isEmpty {
+                if values.count < 2 {
                     Text("等待有效采样").font(.system(size: 11)).foregroundStyle(.secondary)
                 }
             }
