@@ -237,6 +237,8 @@ func powerText(_ value: Double?) -> String {
 struct MachineInfo {
     static let shared = MachineInfo()
     let name: String
+    let family: String
+    let identifier: String
     let chip: String
     let memory: String
     let processors: String
@@ -256,7 +258,7 @@ struct MachineInfo {
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             if let top = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 if let entry = (top["SPHardwareDataType"] as? [[String: Any]])?.first {
-                    for key in ["machine_name", "chip_type", "physical_memory", "number_processors"] {
+                    for key in ["machine_name", "machine_model", "chip_type", "physical_memory", "number_processors"] {
                         fields[key] = entry[key] as? String
                     }
                 }
@@ -264,7 +266,11 @@ struct MachineInfo {
                 gpu = (gpuAny as? Int) ?? Int(gpuAny as? String ?? "") ?? 0
             }
         }
-        name = fields["machine_name"] ?? "这台 Mac"
+        family = fields["machine_name"] ?? "这台 Mac"
+        identifier = fields["machine_model"] ?? ""
+        // system_profiler 只给泛称（"MacBook Pro"），精确名要拿 machine_model 查表
+        name = MacModels.name(for: identifier)
+            ?? (identifier.isEmpty ? family : "\(family) (\(identifier))")
         chip = fields["chip_type"] ?? ""
         memory = fields["physical_memory"] ?? ""
         processors = fields["number_processors"] ?? ""
@@ -279,8 +285,13 @@ struct MachineInfo {
         return [cpu, gpuCores > 0 ? "\(gpuCores) 核 GPU" : ""].filter { !$0.isEmpty }.joined(separator: " · ")
     }
     var subtitle: String { memory.isEmpty ? "" : "\(memory) 统一内存" }
-    var imageKey: String {
-        name.lowercased().split(whereSeparator: { !$0.isLetter && !$0.isNumber }).joined(separator: "-")
+    /// 标识符 slug，如 mac16-8；同一营销名会有不同外观（M4 与 M4 Pro/Max），所以按标识符配图
+    var imageKey: String { Self.slug(identifier) }
+    /// 泛称 slug，如 macbook-pro；用户先前按泛称放的图仍然命中
+    var familyImageKey: String { Self.slug(family) }
+
+    static func slug(_ text: String) -> String {
+        text.lowercased().split(whereSeparator: { !$0.isLetter && !$0.isNumber }).joined(separator: "-")
     }
 }
 

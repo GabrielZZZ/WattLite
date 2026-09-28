@@ -286,7 +286,8 @@ struct PanelView: View {
     private var machineCard: some View {
         let machine = MachineInfo.shared
         return HStack(spacing: 12) {
-            productThumbnail(keys: [machine.imageKey], emptyLabel: "暂无本机图", emptyIcon: "laptopcomputer")
+            productThumbnail(keys: [machine.imageKey, machine.familyImageKey],
+                             emptyLabel: "暂无本机图", emptyIcon: "laptopcomputer")
             VStack(alignment: .leading, spacing: 3) {
                 Text(machine.title).font(.system(size: 12, weight: .medium)).lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -369,7 +370,7 @@ struct PanelView: View {
                     Button("打开登录项设置") { SMAppService.openSystemSettingsLoginItems() }
                 }
             }
-            Text("WattLite 1.0\n只读电源数据，不控制充电，不保存历史到磁盘。")
+            Text("WattLite 1.0\n只读电源数据，不控制充电；历史按分钟聚合存本地 CSV，可随时删除。")
                 .font(.caption).foregroundStyle(.secondary).lineSpacing(5)
         }
     }

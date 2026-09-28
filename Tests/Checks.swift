@@ -63,8 +63,23 @@ struct Checks {
         precondition(apple96.adapterShort == "96W" && apple96.adapterWatts == 94)
         precondition(apple96.adapterMarketingModel == "A2166" && apple96.adapterImageKey == "apple-96w")
         precondition(powerText(-0.001) == "0.0" && powerText(nil) == "—")
+        precondition(MacModels.names.count == 72)
+        precondition(MacModels.name(for: "Mac16,8") == "MacBook Pro (14-inch, 2024)")
+        precondition(MacModels.name(for: "MacBookPro18,3") == "MacBook Pro (14-inch, 2021)")
+        precondition(MacModels.name(for: "Mac15,14") == "Mac Studio (M3 Ultra, 2025)")
+        precondition(MacModels.name(for: "Mac18,5") == "Mac mini (M6, 2026)")
+        precondition(MacModels.name(for: "iMac21,2") == "iMac (24-inch, M1, 2021)")
+        precondition(MacModels.name(for: "Mac99,1") == nil)
+        // 图片按标识符命名（Assets/Adapters/<slug>.png），标识符里的逗号必须被 slug 吃掉
+        for id in MacModels.names.keys {
+            let key = MachineInfo.slug(id)
+            precondition(!key.isEmpty && !key.contains(",") && !key.contains(" ") && key == key.lowercased())
+        }
         let machine = MachineInfo.shared
-        precondition(!machine.name.isEmpty && !machine.imageKey.isEmpty)
+        precondition(!machine.name.isEmpty && !machine.imageKey.isEmpty && !machine.familyImageKey.isEmpty)
+        // 端到端：本机标识符若在表里，展示名必须等于表里的营销名
+        precondition(MacModels.name(for: machine.identifier) == nil
+                     || machine.name == MacModels.name(for: machine.identifier))
         precondition(machine.coreText.contains("核 CPU") && machine.coreText.contains("核 GPU"))
         var session = SessionEnergy()
         let step = Double(10) / 3600
@@ -79,7 +94,7 @@ struct Checks {
         precondition(session.wh == 0 && session.seconds == 0 && session.averageWatts == nil)
         session.add(connected: false, watts: 18, at: now.addingTimeInterval(120))
         precondition(abs(session.wh - 18 * step) < 1e-9)
-        print("PASS: units, capacity vs actual power, zero charging, signed discharge, unplug, stale/missing data, formatting, session energy")
+        print("PASS: units, capacity vs actual power, zero charging, signed discharge, unplug, stale/missing data, formatting, session energy, machine model lookup")
         if CommandLine.arguments.contains("--live") {
             let reader = PowerReader()
             for index in 0..<8 {
