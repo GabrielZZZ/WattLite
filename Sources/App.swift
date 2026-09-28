@@ -167,7 +167,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func popoverDidClose(_ notification: Notification) {
-        store.setVisible(false)
+        // ponytail: 巡检窗口读的是 store.reading，它只在 visible 时发布；关掉 popover 别把它冻住
+        if inspectionWindow == nil { store.setVisible(false) }
         popover.contentViewController = nil
     }
 
