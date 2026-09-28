@@ -370,7 +370,8 @@ struct PanelView: View {
                     Button("打开登录项设置") { SMAppService.openSystemSettingsLoginItems() }
                 }
             }
-            Text("WattLite 1.0\n只读电源数据，不控制充电；历史按分钟聚合存本地 CSV，可随时删除。")
+            // 版本读 Info.plist，免得发版时忘记同步这里
+            Text("WattLite \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")\n只读电源数据，不控制充电；历史按分钟聚合存本地 CSV，可随时删除。")
                 .font(.caption).foregroundStyle(.secondary).lineSpacing(5)
         }
     }

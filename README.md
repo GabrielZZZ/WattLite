@@ -1,6 +1,7 @@
 # WattLite
 
 <p align="left">
+  <a href="https://github.com/GabrielZZZ/WattLite/releases/latest"><img alt="release" src="https://img.shields.io/github/v/release/GabrielZZZ/WattLite?color=blue"></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="platform" src="https://img.shields.io/badge/macOS-14%2B-blue">
   <img alt="arch" src="https://img.shields.io/badge/arch-arm64%20(Apple%20Silicon)-black">
@@ -39,15 +40,38 @@ macOS 菜单栏功率监视器。只回答两个问题：**这台 Mac 此刻吃�
 
 电池净功率 = 电压 × 有符号电流，正值充电、负值放电；系统约每分钟更新一次，与输入瞬时值不同步，所以面板**不做两者差值推算**。
 
-## 快速开始
+## 安装
+
+### 直接下载（推荐）
+
+从 [**Releases**](https://github.com/GabrielZZZ/WattLite/releases/latest) 下载 `WattLite-2.0.dmg`，打开后把 WattLite 拖进 `Applications`。
+
+首次打开需要放行一次：项目没有 Apple Developer 账号，因此是 ad-hoc 签名、未经公证，Gatekeeper 会拦下所有从浏览器下载的副本。二选一：
+
+- **系统设置 → 隐私与安全性**，在"已阻止使用 WattLite"处点 **仍要打开**；
+- 终端去掉隔离标记：
 
 ```bash
-git clone <this-repo> && cd WattLite
-bash build.sh            # 先跑自检，再产出 build/WattLite.app
+xattr -dr com.apple.quarantine /Applications/WattLite.app
+```
+
+也可以用 `WattLite-2.0.zip`，但**必须双击或用 `ditto -x -k` 解压**——`unzip` 会把资源派生数据解成一堆 `._` 文件留在包里，签名封条当场失效。
+
+装好后菜单栏出现 `⚡ 67W · 入 9.0 W`，点它展开面板。设置里可打开**登录时启动**。
+
+### 从源码构建
+
+```bash
+git clone https://github.com/GabrielZZZ/WattLite.git && cd WattLite
+bash build.sh                        # 先跑自检，再产出 build/WattLite.app
 open build/WattLite.app
 ```
 
 只需要 Xcode 命令行工具（`xcode-select --install`）。没有 Xcode 工程、没有 SwiftPM、没有第三方依赖。要求 Apple Silicon + macOS 14+。
+
+```bash
+bash build.sh release                # 额外产出 build/WattLite-<版本>.{dmg,zip}
+```
 
 自检是一个纯 `precondition` 的可执行程序，覆盖功率解码、边界与陈旧数据、会话能量积分、机型标识符查表：
 
@@ -93,10 +117,20 @@ CSV 本身就是导出格式，没有数据库、没有后台上传进程；删�
 
 ## 已知限制
 
-- **未签名**（ad-hoc 签名）。自己 `bash build.sh` 编译运行不受影响；从别处下载的 `.app` 会被 Gatekeeper 拦。
+- **未签名**（ad-hoc 签名，无 Apple Developer 账号，因此也无法公证）。从浏览器下载的 `.dmg` / `.zip` 首次打开会被 Gatekeeper 拦，见[安装](#安装)；自己 `bash build.sh` 编译出的副本不受影响。
 - **精度未经外部功率计校准**。`PDTR` 是机器侧输入功率，不是插座端功率。
 - **只支持 Apple Silicon**：`build.sh` 的编译目标写死 `arm64-apple-macosx14.0`，要跑 Intel 得自己加通用二进制目标。
 - 30 W / 240 W 档苹果适配器暂无公开原图；适配器 `Model` 十六进制 → A 编号的对照表目前只有 2 条经实测确认（`0x7016 → A2518`、`0x7002 → A2166`），没有权威公开来源，因此不猜。
+
+## 更新记录
+
+**v2.0** — 第一个正式发行版，提供 `.dmg` / `.zip` 直接下载安装。
+
+- 本机型号自动识别到精确营销名（72 项标识符查表），并按标识符自动配官方产品图
+- 苹果适配器内置 9 档功率图，统一 600×600 透明方图、只保留机身
+- 第三方充电头可自建档案：名称 / 型号 / 协议 + 上传产品图，用户条目覆盖内置条目
+- 新增本次接通输入能量卡（Wh、时长、平均功率）
+- 面板统一为单个大数字 + 功率驱动的粒子流；popover 高度固定，不再在接电/电池两态间抖动
 
 ## 许可
 
