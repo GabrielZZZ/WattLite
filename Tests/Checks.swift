@@ -80,7 +80,17 @@ struct Checks {
         // 端到端：本机标识符若在表里，展示名必须等于表里的营销名
         precondition(MacModels.name(for: machine.identifier) == nil
                      || machine.name == MacModels.name(for: machine.identifier))
-        precondition(machine.coreText.contains("核 CPU") && machine.coreText.contains("核 GPU"))
+        // 语言表：占位符种类与数量必须一一对应，切英文才不会崩格式
+        for (zh, en) in Strings.en where zh.contains("%") {
+            precondition(Self.placeholders(zh) == Self.placeholders(en), zh)
+        }
+        L10n.shared.lang = .en
+        precondition(T("正在充电") == "Charging" && TF("%d 小时 %d 分", 3, 20) == "3h 20m")
+        precondition(charging.state == "Charging" && machine.coreText.contains("-core CPU"))
+        precondition(T("表里没有的串") == "表里没有的串")
+        L10n.shared.lang = .zh
+        precondition(charging.state == "正在充电" && machine.coreText.contains("核 CPU")
+                     && machine.coreText.contains("核 GPU"))
         var session = SessionEnergy()
         let step = Double(10) / 3600
         session.add(connected: true, watts: 60, at: now)
@@ -94,7 +104,38 @@ struct Checks {
         precondition(session.wh == 0 && session.seconds == 0 && session.averageWatts == nil)
         session.add(connected: false, watts: 18, at: now.addingTimeInterval(120))
         precondition(abs(session.wh - 18 * step) < 1e-9)
-        print("PASS: units, capacity vs actual power, zero charging, signed discharge, unplug, stale/missing data, formatting, session energy, machine model lookup")
+        // 覆盖检查：Sources 里每个 T("…")/TF("…") 的中文键都必须有英文，否则英文界面会漏出中文
+        var untranslated: [String] = []
+        let sources = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Sources")
+        let files = (try? FileManager.default.contentsOfDirectory(at: sources, includingPropertiesForKeys: nil))?
+            .filter { $0.pathExtension == "swift" && $0.lastPathComponent != "Strings.swift" } ?? []
+        for file in files.sorted(by: { $0.path < $1.path }) {
+            guard let text = try? String(contentsOf: file, encoding: .utf8) else { continue }
+            for marker in ["T(\"", "TF(\""] {
+                var cursor = text.startIndex
+                while let hit = text.range(of: marker, range: cursor..<text.endIndex) {
+                    var index = hit.upperBound
+                    var key = ""
+                    while index < text.endIndex, text[index] != "\"" {
+                        if text[index] == "\\", index < text.endIndex {
+                            let next = text.index(after: index)
+                            if next < text.endIndex, text[next] == "n" { key.append("\n"); index = text.index(after: next); continue }
+                            if next < text.endIndex, text[next] == "\"" { key.append("\""); index = text.index(after: next); continue }
+                        }
+                        key.append(text[index])
+                        index = text.index(after: index)
+                    }
+                    cursor = index < text.endIndex ? text.index(after: index) : text.endIndex
+                    if key.unicodeScalars.contains(where: { (0x4E00...0x9FFF).contains($0.value) }),
+                       Strings.en[key] == nil {
+                        untranslated.append("\(file.lastPathComponent): \(key)")
+                    }
+                }
+            }
+        }
+        precondition(untranslated.isEmpty, "缺英文译文：\n" + untranslated.joined(separator: "\n"))
+        print("PASS: units, capacity vs actual power, zero charging, signed discharge, unplug, stale/missing data, formatting, session energy, machine model lookup, zh/en strings")
         if CommandLine.arguments.contains("--live") {
             let reader = PowerReader()
             for index in 0..<8 {
@@ -104,5 +145,22 @@ struct Checks {
                 if index < 7 { try? await Task.sleep(for: .seconds(1)) }
             }
         }
+    }
+
+    /// 格式串里的占位符类型序列（%% 不算），用于校验中英两边逐一对应
+    static func placeholders(_ text: String) -> [String] {
+        let chars = Array(text)
+        var out: [String] = []
+        var index = 0
+        while index < chars.count {
+            guard chars[index] == "%" else { index += 1; continue }
+            var next = index + 1
+            if next < chars.count, chars[next] == "%" { index = next + 1; continue }
+            while next < chars.count, !chars[next].isLetter, chars[next] != "@" { next += 1 }
+            precondition(next < chars.count, text)
+            out.append(String(chars[next]))
+            index = next + 1
+        }
+        return out
     }
 }

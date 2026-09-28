@@ -129,7 +129,7 @@ final class PowerStore: ObservableObject {
     func refreshLoginState() {
         loginEnabled = SMAppService.mainApp.status == .enabled
         if SMAppService.mainApp.status == .requiresApproval {
-            loginMessage = "请在系统设置的登录项中允许 WattLite。"
+            loginMessage = T("请在系统设置的登录项中允许 WattLite。")
         }
     }
 
@@ -139,10 +139,13 @@ final class PowerStore: ObservableObject {
             else { try SMAppService.mainApp.unregister() }
             loginMessage = nil
         } catch {
-            loginMessage = "无法更改登录启动：\(error.localizedDescription)"
+            loginMessage = TF("无法更改登录启动：%@", error.localizedDescription)
         }
         refreshLoginState()
     }
+
+    /// 切语言后让菜单栏立即重绘，不等下一个采样周期
+    func refreshStatus() { onReading?(latest) }
 
     func stop() {
         sleeping = true

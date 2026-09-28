@@ -15,7 +15,7 @@ BUNDLE="$WORK/WattLite.app"
 mkdir -p "$BUNDLE/Contents/MacOS" "$BUNDLE/Contents/Resources"
 "$TOOL/clang" -isysroot "$SDK" -mmacosx-version-min=14.0 -O2 -Wall -Wextra -c "$ROOT/Sources/SMC.c" -o "$ROOT/build/SMC.o"
 FLAGS=(-parse-as-library -swift-version 5 -sdk "$SDK" -target arm64-apple-macosx14.0 -import-objc-header "$ROOT/Sources/SMC.h")
-"$TOOL/swiftc" "${FLAGS[@]}" "$ROOT/Sources/PowerReading.swift" "$ROOT/Sources/MacModels.swift" "$ROOT/Tests/Checks.swift" "$ROOT/build/SMC.o" -framework IOKit -o "$ROOT/build/checks"
+"$TOOL/swiftc" "${FLAGS[@]}" "$ROOT/Sources/Strings.swift" "$ROOT/Sources/PowerReading.swift" "$ROOT/Sources/MacModels.swift" "$ROOT/Tests/Checks.swift" "$ROOT/build/SMC.o" -framework IOKit -o "$ROOT/build/checks"
 "$ROOT/build/checks"
 "$TOOL/swiftc" "${FLAGS[@]}" -O -whole-module-optimization "$ROOT"/Sources/*.swift "$ROOT/build/SMC.o" -framework AppKit -framework SwiftUI -framework IOKit -framework ServiceManagement -o "$BUNDLE/Contents/MacOS/WattLite"
 cp "$ROOT/Info.plist" "$BUNDLE/Contents/Info.plist"

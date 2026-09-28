@@ -5,6 +5,7 @@ struct TrendView: View {
     let metric: PowerMetric
     let now: Date
     let interval: Double
+    @ObservedObject private var l10n = L10n.shared
 
     private var samples: [(date: Date, watts: Double)] {
         points.compactMap { point in point.watts(for: metric).map { (point.date, $0) } }
@@ -18,7 +19,7 @@ struct TrendView: View {
         let lower = min(0, floor((values.map(\.watts).min() ?? 0) / 10) * 10)
         VStack(spacing: 8) {
             HStack {
-                Text(metric == .input ? "输入功率趋势" : "电池采样点")
+                Text(T(metric == .input ? "输入功率趋势" : "电池采样点"))
                     .font(.system(size: 11, weight: .medium))
                 Spacer()
                 Text("\(Int(upper)) W").font(.system(size: 10)).foregroundStyle(.secondary)
@@ -70,14 +71,15 @@ struct TrendView: View {
             .frame(minHeight: 56, maxHeight: .infinity)
             .overlay {
                 if values.count < 2 {
-                    Text("等待有效采样").font(.system(size: 11)).foregroundStyle(.secondary)
+                    Text(T("等待有效采样")).font(.system(size: 11)).foregroundStyle(.secondary)
                 }
             }
-            .accessibilityLabel("最近十分钟，\(values.count) 个有效采样，范围 \(Int(lower)) 至 \(Int(upper)) 瓦")
+            .accessibilityLabel(TF("最近十分钟，%d 个有效采样，范围 %d 至 %d 瓦",
+                                   values.count, Int(lower), Int(upper)))
             HStack {
-                Text("10 分钟前")
+                Text(T("10 分钟前"))
                 Spacer()
-                Text("\(Int(lower)) W · 现在")
+                Text(TF("%d W · 现在", Int(lower)))
             }.font(.system(size: 9)).foregroundStyle(.secondary)
         }
     }

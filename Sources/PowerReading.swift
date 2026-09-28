@@ -83,11 +83,11 @@ struct PowerReading: Equatable {
     }
 
     var state: String {
-        guard let connected else { return "数据不可用" }
-        if !connected { return "电池供电" }
-        if let batteryWatts, batteryWatts < -0.05 { return "已接电 · 电池辅助供电" }
-        if charging == true { return "正在充电" }
-        return charging == false ? "已接电 · 未充电" : "已接电 · 状态未知"
+        guard let connected else { return T("数据不可用") }
+        if !connected { return T("电池供电") }
+        if let batteryWatts, batteryWatts < -0.05 { return T("已接电 · 电池辅助供电") }
+        if charging == true { return T("正在充电") }
+        return charging == false ? T("已接电 · 未充电") : T("已接电 · 状态未知")
     }
 
     static func modelHex(_ value: Any?) -> String? {
@@ -154,12 +154,12 @@ struct PowerReading: Equatable {
     }
 
     var batteryLabel: String {
-        abs(batteryWatts ?? 0) < 0.05 ? "待机放电" : ((batteryWatts ?? 0) < 0 ? "电池净放电" : "电池净充电")
+        abs(batteryWatts ?? 0) < 0.05 ? T("待机放电") : ((batteryWatts ?? 0) < 0 ? T("电池净放电") : T("电池净充电"))
     }
 
     var remainingText: String? {
         guard let minutes = remainingMinutes else { return nil }
-        return minutes >= 60 ? "\(minutes / 60) 小时 \(minutes % 60) 分" : "\(minutes) 分"
+        return minutes >= 60 ? TF("%d 小时 %d 分", minutes / 60, minutes % 60) : TF("%d 分", minutes)
     }
     var capacityText: String? {
         guard let remaining = remainingMah else { return nil }
@@ -174,8 +174,8 @@ struct PowerReading: Equatable {
 enum PowerMetric: String, CaseIterable, Identifiable {
     case input, battery
     var id: String { rawValue }
-    var title: String { self == .input ? "Mac 输入" : "电池净功率" }
-    var prefix: String { self == .input ? "入" : "电池" }
+    var title: String { self == .input ? T("Mac 输入") : T("电池净功率") }
+    var prefix: String { self == .input ? T("入") : T("电池") }
 }
 
 actor PowerReader {
@@ -266,7 +266,7 @@ struct MachineInfo {
                 gpu = (gpuAny as? Int) ?? Int(gpuAny as? String ?? "") ?? 0
             }
         }
-        family = fields["machine_name"] ?? "这台 Mac"
+        family = fields["machine_name"] ?? T("这台 Mac")
         identifier = fields["machine_model"] ?? ""
         // system_profiler 只给泛称（"MacBook Pro"），精确名要拿 machine_model 查表
         name = MacModels.name(for: identifier)
@@ -281,10 +281,10 @@ struct MachineInfo {
     // number_processors 形如 "proc 14:0:10:4" = 总核:?:性能:能效
     var coreText: String {
         let parts = processors.split(separator: " ").last?.split(separator: ":").compactMap { Int($0) } ?? []
-        let cpu = parts.count == 4 ? "\(parts[0]) 核 CPU（\(parts[2]) 性能 + \(parts[3]) 能效）" : ""
-        return [cpu, gpuCores > 0 ? "\(gpuCores) 核 GPU" : ""].filter { !$0.isEmpty }.joined(separator: " · ")
+        let cpu = parts.count == 4 ? TF("%d 核 CPU（%d 性能 + %d 能效）", parts[0], parts[2], parts[3]) : ""
+        return [cpu, gpuCores > 0 ? TF("%d 核 GPU", gpuCores) : ""].filter { !$0.isEmpty }.joined(separator: " · ")
     }
-    var subtitle: String { memory.isEmpty ? "" : "\(memory) 统一内存" }
+    var subtitle: String { memory.isEmpty ? "" : TF("%@ 统一内存", memory) }
     /// 标识符 slug，如 mac16-8；同一营销名会有不同外观（M4 与 M4 Pro/Max），所以按标识符配图
     var imageKey: String { Self.slug(identifier) }
     /// 泛称 slug，如 macbook-pro；用户先前按泛称放的图仍然命中

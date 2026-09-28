@@ -41,6 +41,7 @@ private enum AdapterImages {
 struct PanelView: View {
     @ObservedObject var store: PowerStore
     @ObservedObject private var library = AdapterLibrary.shared
+    @ObservedObject private var l10n = L10n.shared
     @State private var settings = false
     @State private var editingAdapter = false
     @State private var information = false
@@ -66,7 +67,7 @@ struct PanelView: View {
                 if let percentage = reading.percentage {
                     Label("\(percentage)%", systemImage: batterySymbol)
                         .font(.system(size: 12, weight: .medium)).foregroundStyle(.secondary)
-                        .accessibilityLabel("电量 \(percentage)%")
+                        .accessibilityLabel(TF("电量 %d%%", percentage))
                 }
             }
             // ponytail: 高度恒定（minHeight + 趋势图吸收余量），popover 才不会随内容涨缩上下抖
@@ -81,18 +82,18 @@ struct PanelView: View {
             }
             Divider()
             HStack {
-                Text(settings ? "本地运行 · 无网络请求" : sourceCaption)
+                Text(settings ? T("本地运行 · 无网络请求") : sourceCaption)
                     .font(.system(size: 10)).foregroundStyle(.secondary)
                 Spacer()
                 Button { settings.toggle() } label: {
                     Image(systemName: settings ? "arrow.left" : "gearshape")
                         .frame(width: 28, height: 28)
                 }
-                .help(settings ? "返回功率面板" : "设置")
-                .accessibilityLabel(settings ? "返回功率面板" : "设置")
+                .help(T(settings ? "返回功率面板" : "设置"))
+                .accessibilityLabel(T(settings ? "返回功率面板" : "设置"))
                 Button { NSApp.terminate(nil) } label: {
                     Image(systemName: "power").frame(width: 28, height: 28)
-                }.help("退出 WattLite").accessibilityLabel("退出 WattLite")
+                }.help(T("退出 WattLite")).accessibilityLabel(T("退出 WattLite"))
             }
             .buttonStyle(.borderless)
         }
@@ -104,7 +105,7 @@ struct PanelView: View {
     }
 
     private var sourceCaption: String {
-        reading.inputIsLive ? "SMC 直读 · 输入侧功率" : "系统缓存 · 非实时输入"
+        reading.inputIsLive ? T("SMC 直读 · 输入侧功率") : T("系统缓存 · 非实时输入")
     }
 
     private var batterySymbol: String {
@@ -131,14 +132,14 @@ struct PanelView: View {
                     Button { information.toggle() } label: {
                         Image(systemName: "info.circle").foregroundStyle(.secondary)
                     }
-                    .buttonStyle(.plain).accessibilityLabel("功率数据说明")
+                    .buttonStyle(.plain).accessibilityLabel(T("功率数据说明"))
                     .popover(isPresented: $information) {
-                        Text("Mac 输入：优先读取 SMC PDTR，包含机器运行与充电所需电能，不是插座端功率。\n\n电池净功率：电池电压 × 有符号电流。正值充电，负值放电；系统通常约每分钟更新，不能与输入瞬时值直接相减。\n\n适配器容量是供电能力，不是实时功率。传感器为未公开接口，精度未经外部功率计校准；不可用时不估造数据。")
+                        Text(T("Mac 输入：优先读取 SMC PDTR，包含机器运行与充电所需电能，不是插座端功率。\n\n电池净功率：电池电压 × 有符号电流。正值充电，负值放电；系统通常约每分钟更新，不能与输入瞬时值直接相减。\n\n适配器容量是供电能力，不是实时功率。传感器为未公开接口，精度未经外部功率计校准；不可用时不估造数据。"))
                             .font(.system(size: 12)).lineSpacing(4).padding(20).frame(width: 310)
                     }
                 }
                 .accessibilityElement(children: .contain)
-                .accessibilityLabel("\(effectiveMetric.title) \(powerText(watts)) 瓦")
+                .accessibilityLabel(TF("%@ %@ 瓦", effectiveMetric.title, powerText(watts)))
                 HStack(spacing: 6) {
                     Circle().fill(reading.connected == true ? Style.accent : Color.secondary)
                         .frame(width: 6, height: 6)
@@ -150,7 +151,7 @@ struct PanelView: View {
                         }
                     Text(reading.state).font(.system(size: 12, weight: .medium))
                     Spacer()
-                    Text(effectiveMetric == .input && reading.inputIsLive ? "实时读取" : "系统采样")
+                    Text(T(effectiveMetric == .input && reading.inputIsLive ? "实时读取" : "系统采样"))
                         .font(.system(size: 10)).foregroundStyle(.secondary)
                 }
                 Text(batteryLine).font(.system(size: 11)).foregroundStyle(.secondary)
@@ -160,15 +161,15 @@ struct PanelView: View {
                 .clipShape(RoundedRectangle(cornerRadius: Style.cardRadius)))
             TrendView(points: store.history, metric: effectiveMetric, now: reading.capturedAt, interval: store.interval)
             VStack(spacing: 5) {
-                detail("输入电压", reading.inputVolts.map { String(format: "%.2f V", $0) } ?? "—")
-                detail("输入电流", reading.inputAmps.map { String(format: "%.2f A", $0) } ?? "—")
-                detail("电池剩余容量", reading.capacityText ?? "—")
+                detail(T("输入电压"), reading.inputVolts.map { String(format: "%.2f V", $0) } ?? "—")
+                detail(T("输入电流"), reading.inputAmps.map { String(format: "%.2f A", $0) } ?? "—")
+                detail(T("电池剩余容量"), reading.capacityText ?? "—")
             }
             if reading.connected == true {
                 let name = adapterDisplayName
                 HStack(spacing: 12) {
                     productThumbnail(keys: [reading.adapterImageKey, reading.adapterIdentityKey],
-                                     emptyLabel: "暂无充电头产品图", emptyIcon: "powerplug.fill")
+                                     emptyLabel: T("暂无充电头产品图"), emptyIcon: "powerplug.fill")
                     VStack(alignment: .leading, spacing: 3) {
                         Text(name).font(.system(size: 12, weight: .medium)).lineLimit(2)
                             .fixedSize(horizontal: false, vertical: true)
@@ -184,20 +185,20 @@ struct PanelView: View {
                             Image(systemName: "square.and.pencil")
                                 .font(.system(size: 11)).foregroundStyle(.secondary)
                         }
-                        .help("编辑适配器图案与信息")
-                        .accessibilityLabel("编辑适配器图案与信息")
+                        .help(T("编辑适配器图案与信息"))
+                        .accessibilityLabel(T("编辑适配器图案与信息"))
                     }
                 }
                 .padding(10)
                 .background(Style.surface, in: RoundedRectangle(cornerRadius: Style.cardRadius))
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("充电头 \(name)，\(adapterSubtitle)")
+                .accessibilityLabel(TF("充电头 %@，%@", name, adapterSubtitle))
             }
             machineCard
             if let issue = reading.issue {
-                Text(issue).font(.system(size: 10)).foregroundStyle(.secondary)
+                Text(T(issue)).font(.system(size: 10)).foregroundStyle(.secondary)
             } else {
-                Text("电池净功率正值为充电、负值为放电；与输入采样不同步，不作差值推算。")
+                Text(T("电池净功率正值为充电、负值为放电；与输入采样不同步，不作差值推算。"))
                     .font(.system(size: 10)).foregroundStyle(.secondary)
             }
             sessionCard
@@ -205,8 +206,8 @@ struct PanelView: View {
     }
 
     private var batteryAge: String {
-        guard let date = reading.batteryUpdatedAt else { return "系统采样时间未知" }
-        return "系统采样 · \(max(0, Int(reading.capturedAt.timeIntervalSince(date)))) 秒前"
+        guard let date = reading.batteryUpdatedAt else { return T("系统采样时间未知") }
+        return TF("系统采样 · %d 秒前", max(0, Int(reading.capturedAt.timeIntervalSince(date))))
     }
 
     private var batteryLine: String {
@@ -217,22 +218,22 @@ struct PanelView: View {
     private var sessionCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline) {
-                Text(reading.connected == true ? "本次接通输入能量" : "本次断接放出能量")
+                Text(reading.connected == true ? T("本次接通输入能量") : T("本次断接放出能量"))
                     .font(.system(size: 12, weight: .medium))
                 Spacer()
                 Text("\(String(format: "%.1f", store.session.wh)) Wh")
                     .font(.system(size: 22, weight: .medium, design: .rounded)).monospacedDigit()
             }
             HStack(alignment: .firstTextBaseline, spacing: 18) {
-                sessionStat("时长", durationText(store.session.seconds))
-                sessionStat("平均功率", store.session.averageWatts.map { "\(String(format: "%.1f", $0)) W" } ?? "—")
+                sessionStat(T("时长"), durationText(store.session.seconds))
+                sessionStat(T("平均功率"), store.session.averageWatts.map { "\(String(format: "%.1f", $0)) W" } ?? "—")
             }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Style.surface, in: RoundedRectangle(cornerRadius: Style.cardRadius))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("本次会话能量 \(String(format: "%.1f", store.session.wh)) 瓦时")
+        .accessibilityLabel(TF("本次会话能量 %@ 瓦时", String(format: "%.1f", store.session.wh)))
     }
 
     private func sessionStat(_ label: String, _ value: String) -> some View {
@@ -244,7 +245,8 @@ struct PanelView: View {
 
     private func durationText(_ seconds: Double) -> String {
         let minutes = Int(seconds) / 60
-        return minutes >= 60 ? "\(minutes / 60) 小时 \(minutes % 60) 分" : (minutes > 0 ? "\(minutes) 分" : "不足 1 分")
+        return minutes >= 60 ? TF("%d 小时 %d 分", minutes / 60, minutes % 60)
+            : (minutes > 0 ? TF("%d 分", minutes) : T("不足 1 分"))
     }
 
 
@@ -255,27 +257,27 @@ struct PanelView: View {
     }
 
     private var adapterDisplayName: String {
-        userAdapterEntry?.name.nonEmpty ?? reading.adapterProfile?.name ?? reading.adapterName ?? "未知适配器"
+        userAdapterEntry?.name.nonEmpty ?? reading.adapterProfile?.name ?? reading.adapterName ?? T("未知适配器")
     }
 
     private var adapterSubtitle: String {
         var parts: [String] = []
         let builtIn = reading.adapterProfile
         if let user = userAdapterEntry {
-            if let model = user.model.nonEmpty ?? builtIn?.model { parts.append("型号 \(model)") }
+            if let model = user.model.nonEmpty ?? builtIn?.model { parts.append("\(T("型号")) \(model)") }
             if let protocols = user.protocols.nonEmpty ?? builtIn?.protocols { parts.append(protocols) }
         } else if builtIn != nil {
-            parts.append("型号 \(builtIn!.model)")
+            parts.append("\(T("型号")) \(builtIn!.model)")
             parts.append(builtIn!.protocols)
         } else {
             if let maker = reading.adapterManufacturer { parts.append(maker) }
             else if let brand = reading.adapterVendorName { parts.append(brand) }
-            if let marketing = reading.adapterMarketingModel { parts.append("型号 \(marketing)") }
-            else if let hex = reading.adapterModelHex { parts.append("型号 \(hex)") }
+            if let marketing = reading.adapterMarketingModel { parts.append("\(T("型号")) \(marketing)") }
+            else if let hex = reading.adapterModelHex { parts.append("\(T("型号")) \(hex)") }
         }
         if userAdapterEntry == nil, reading.adapterProfile == nil, reading.adapterModelHex == nil,
            let volts = reading.adapterVolts, let amps = reading.adapterAmps {
-            parts.append(String(format: "额定 %.1f V · %.2f A", volts, amps))
+            parts.append(TF("额定 %.1f V · %.2f A", volts, amps))
         }
         if let vendor = reading.adapterVendorHex, reading.adapterVendorName == nil {
             parts.append("USB \(vendor):\(reading.adapterProductHex ?? "----")")
@@ -287,9 +289,10 @@ struct PanelView: View {
         let machine = MachineInfo.shared
         return HStack(spacing: 12) {
             productThumbnail(keys: [machine.imageKey, machine.familyImageKey],
-                             emptyLabel: "暂无本机图", emptyIcon: "laptopcomputer")
+                             emptyLabel: T("暂无本机图"), emptyIcon: "laptopcomputer")
             VStack(alignment: .leading, spacing: 3) {
-                Text(machine.title).font(.system(size: 12, weight: .medium)).lineLimit(2)
+                // 断接时右侧还有"预计剩余"，中文比英文宽一截，两行会把机型名截掉
+                Text(machine.title).font(.system(size: 12, weight: .medium)).lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
                 Text(machine.coreText).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -299,7 +302,7 @@ struct PanelView: View {
                         Spacer()
             if reading.connected == false {
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("预计剩余").font(.system(size: 9)).foregroundStyle(.secondary)
+                    Text(T("预计剩余")).font(.system(size: 9)).foregroundStyle(.secondary)
                     Text(reading.remainingText ?? "—")
                         .font(.system(size: 15, weight: .medium, design: .rounded)).monospacedDigit()
                         .foregroundStyle(.secondary)
@@ -309,7 +312,7 @@ struct PanelView: View {
         .padding(10)
         .background(Style.surface, in: RoundedRectangle(cornerRadius: Style.cardRadius))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("本机 \(machine.title)，\(machine.coreText)，\(machine.subtitle)")
+        .accessibilityLabel(TF("本机 %@，%@，%@", machine.title, machine.coreText, machine.subtitle))
     }
 
     @ViewBuilder
@@ -319,15 +322,15 @@ struct PanelView: View {
             Image(nsImage: image).resizable().aspectRatio(contentMode: .fit)
                 .frame(width: size.width, height: size.height)
                 .clipShape(RoundedRectangle(cornerRadius: 9))
-                .accessibilityLabel("产品图")
+                .accessibilityLabel(T("产品图"))
         } else {
             VStack(spacing: 2) {
                 Image(systemName: emptyIcon).font(.system(size: 15)).foregroundStyle(.secondary)
-                Text("无产品图").font(.system(size: 8)).foregroundStyle(.secondary)
+                Text(T("无产品图")).font(.system(size: 8)).foregroundStyle(.secondary)
             }
             .frame(width: size.width, height: size.height)
             .background(Style.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
-            .help("点击卡片右侧铅笔按钮可上传产品图，或手动放到 ~/Library/Application Support/WattLite/adapters/")
+            .help(T("点击卡片右侧铅笔按钮可上传产品图，或手动放到 ~/Library/Application Support/WattLite/adapters/"))
             .accessibilityLabel(emptyLabel)
         }
     }
@@ -342,36 +345,46 @@ struct PanelView: View {
 
     private var settingsContent: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("保持轻巧。\n只看重要的功率。")
+            Text(T("保持轻巧。\n只看重要的功率。"))
                 .font(.system(size: 27, weight: .medium)).lineSpacing(4).padding(.vertical, 8)
             VStack(alignment: .leading, spacing: 10) {
-                Text("菜单栏显示").font(.headline)
-                Picker("菜单栏显示", selection: $store.metric) {
-                    ForEach(PowerMetric.allCases) { metric in Text(metric.title).tag(metric) }
+                Text(T("界面语言")).font(.headline)
+                Picker(T("界面语言"), selection: $l10n.lang) {
+                    ForEach(AppLang.allCases) { lang in Text(lang.title).tag(lang) }
                 }.labelsHidden().pickerStyle(.segmented)
-                Text("电池净功率为系统缓存，菜单栏用 ≈ 标记。")
+                    .onChange(of: l10n.lang) { store.refreshStatus() }
+                Text(T("切换后立即生效，无需重启。"))
                     .font(.caption).foregroundStyle(.secondary)
             }
             VStack(alignment: .leading, spacing: 10) {
-                Text("后台采样间隔").font(.headline)
-                Picker("后台采样间隔", selection: $store.interval) {
-                    Text("1 秒").tag(1.0)
-                    Text("2 秒").tag(2.0)
-                    Text("5 秒").tag(5.0)
+                Text(T("菜单栏显示")).font(.headline)
+                Picker(T("菜单栏显示"), selection: $store.metric) {
+                    ForEach(PowerMetric.allCases) { metric in Text(metric.title).tag(metric) }
                 }.labelsHidden().pickerStyle(.segmented)
-                Text("面板展开时每秒读取；睡眠时停止采集。")
+                Text(T("电池净功率为系统缓存，菜单栏用 ≈ 标记。"))
                     .font(.caption).foregroundStyle(.secondary)
             }
-            Toggle("登录时启动", isOn: Binding(get: { store.loginEnabled }, set: { store.setLoginEnabled($0) }))
+            VStack(alignment: .leading, spacing: 10) {
+                Text(T("后台采样间隔")).font(.headline)
+                Picker(T("后台采样间隔"), selection: $store.interval) {
+                    Text(T("1 秒")).tag(1.0)
+                    Text(T("2 秒")).tag(2.0)
+                    Text(T("5 秒")).tag(5.0)
+                }.labelsHidden().pickerStyle(.segmented)
+                Text(T("面板展开时每秒读取；睡眠时停止采集。"))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Toggle(T("登录时启动"), isOn: Binding(get: { store.loginEnabled }, set: { store.setLoginEnabled($0) }))
                 .toggleStyle(.switch)
             if let message = store.loginMessage {
                 Text(message).font(.caption).foregroundStyle(.secondary)
                 if SMAppService.mainApp.status == .requiresApproval {
-                    Button("打开登录项设置") { SMAppService.openSystemSettingsLoginItems() }
+                    Button(T("打开登录项设置")) { SMAppService.openSystemSettingsLoginItems() }
                 }
             }
             // 版本读 Info.plist，免得发版时忘记同步这里
-            Text("WattLite \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")\n只读电源数据，不控制充电；历史按分钟聚合存本地 CSV，可随时删除。")
+            Text("WattLite \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")\n"
+                 + T("只读电源数据，不控制充电；历史按分钟聚合存本地 CSV，可随时删除。"))
                 .font(.caption).foregroundStyle(.secondary).lineSpacing(5)
         }
     }
@@ -468,6 +481,7 @@ private struct AdapterEditor: View {
     let reading: PowerReading
     let onClose: () -> Void
     @ObservedObject private var library = AdapterLibrary.shared
+    @ObservedObject private var l10n = L10n.shared
     @State private var name: String
     @State private var model: String
     @State private var protocols: String
@@ -495,8 +509,8 @@ private struct AdapterEditor: View {
                 Button(action: onClose) {
                     Image(systemName: "arrow.left").frame(width: 24, height: 24)
                 }
-                .buttonStyle(.borderless).help("返回功率面板").accessibilityLabel("返回功率面板")
-                Text("适配器资料").font(.system(size: 14, weight: .semibold))
+                .buttonStyle(.borderless).help(T("返回功率面板")).accessibilityLabel(T("返回功率面板"))
+                Text(T("适配器资料")).font(.system(size: 14, weight: .semibold))
                 Spacer()
             }
             if let key {
@@ -509,7 +523,7 @@ private struct AdapterEditor: View {
                         } else {
                             VStack(spacing: 2) {
                                 Image(systemName: "powerplug.fill").font(.system(size: 15)).foregroundStyle(.secondary)
-                                Text("无产品图").font(.system(size: 8)).foregroundStyle(.secondary)
+                                Text(T("无产品图")).font(.system(size: 8)).foregroundStyle(.secondary)
                             }
                             .frame(width: Style.cardThumb.width, height: Style.cardThumb.height)
                             .background(Style.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 9))
@@ -518,11 +532,11 @@ private struct AdapterEditor: View {
                     .frame(width: Style.cardThumb.width, height: Style.cardThumb.height)
                     .clipShape(RoundedRectangle(cornerRadius: 9))
                     VStack(alignment: .leading, spacing: 6) {
-                        Button("选择图片…") { pickImage() }
+                        Button(T("选择图片…")) { pickImage() }
                         if pickedImage != nil {
-                            Button("撤销新图") { pickedImage = nil }
+                            Button(T("撤销新图")) { pickedImage = nil }
                         }
-                        Text("保存时转为 PNG，存到本地 adapters 目录")
+                        Text(T("保存时转为 PNG，存到本地 adapters 目录"))
                             .font(.system(size: 9)).foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -531,18 +545,18 @@ private struct AdapterEditor: View {
                 field("型号", text: $model, prompt: "外壳印的型号，如 OSA00CB9BC")
                 field("快充协议", text: $protocols, prompt: "如 SUPERVOOC · PD · PPS · QC3.0")
                 HStack(spacing: 10) {
-                    Button("保存") { save() }
+                    Button(T("保存")) { save() }
                         .keyboardShortcut(.defaultAction)
                         .disabled(!canSave)
                     if isCustomized {
-                        Button("删除自定义", role: .destructive) { remove() }
+                        Button(T("删除自定义"), role: .destructive) { remove() }
                     }
                     Spacer()
                 }
-                Text("识别键 \(key) · 资料仅保存在本机 ~/Library/Application Support/WattLite/")
+                Text("\(TF("识别键 %@", key)) · \(T("资料仅保存在本机 ~/Library/Application Support/WattLite/"))")
                     .font(.system(size: 9)).foregroundStyle(.secondary)
             } else {
-                Text("当前适配器没有可用的识别信息（无 USB ID 与名称），无法保存自定义资料。请插上适配器后再试。")
+                Text(T("当前适配器没有可用的识别信息（无 USB ID 与名称），无法保存自定义资料。请插上适配器后再试。"))
                     .font(.system(size: 12)).foregroundStyle(.secondary).lineSpacing(4)
             }
         }
@@ -551,8 +565,8 @@ private struct AdapterEditor: View {
 
     private func field(_ title: String, text: Binding<String>, prompt: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.system(size: 11)).foregroundStyle(.secondary)
-            TextField(prompt, text: text).textFieldStyle(.roundedBorder).font(.system(size: 12))
+            Text(T(title)).font(.system(size: 11)).foregroundStyle(.secondary)
+            TextField(T(prompt), text: text).textFieldStyle(.roundedBorder).font(.system(size: 12))
         }
     }
 
