@@ -50,13 +50,15 @@ One monospaced number with a fixed width, so it never shoves the rest of your me
 | Battery capacity | Current / full-charge mAh | `AppleSmartBattery` |
 | Adapter card | Name, vendor, model, rated watts, product art | `AdapterDetails` + USB PD `FedDetails` |
 | Mac card | Exact marketing name, CPU/GPU cores, memory | `system_profiler` + identifier lookup table |
-| Session energy | Wh, duration, average since plugged in | Integrated from samples |
+| Session energy | Wh, duration, average since plugged in, one everyday comparison | Integrated from samples |
 
 **Battery net power** = voltage × signed current: positive is charging, negative is discharging. The system refreshes it roughly once a minute, out of phase with the instantaneous input reading, so the panel deliberately **does not** subtract one from the other.
 
 **What `PDTR` means.** It is input power measured *inside* the Mac — the wall outlet sees more, because the adapter itself burns some.
 
 Unplugged, the same panel switches to the battery view: the trend becomes discrete battery samples, the Mac card gains an estimated time remaining, and the session card counts energy given out instead of taken in.
+
+**Everyday comparisons.** The session card closes with one relatable rung, chosen from nine: 🍌 banana, 🔋 AA cell, 💡 LED bulb, 💧🫖 boiled water by the mug and by the litre, 📺 TV, 💨 hair dryer, ⚡ 1 kWh, 🚗 EV kilometres. It always picks the largest rung the session has actually reached, so the count never drops below 1. The banana, the AA cell and both boil-water rungs are exact arithmetic; the appliance rungs are nameplate watts × a typical duration, which is why every line carries `≈`.
 
 <p align="center">
   <img src="docs/screenshots/panel-battery-en.png" width="340" alt="On battery">
@@ -81,14 +83,14 @@ While the panel is open it samples once per second regardless; sampling stops on
 
 ### Download (recommended)
 
-Grab `WattLite-2.0.dmg` from [**Releases**](https://github.com/GabrielZZZ/WattLite/releases/latest) and drag WattLite into `Applications`.
+Grab `WattLite-2.1.dmg` from [**Releases**](https://github.com/GabrielZZZ/WattLite/releases/latest) and drag WattLite into `Applications`.
 
 The first launch needs one manual approval: this project has no Apple Developer account, so the build is ad-hoc signed and not notarised, and Gatekeeper blocks every copy that arrives through a browser. Either
 
 - open **System Settings → Privacy & Security** and click **Open Anyway** next to "WattLite was blocked", or
 - clear the quarantine flag with `xattr -dr com.apple.quarantine /Applications/WattLite.app`
 
-`WattLite-2.0.zip` works too, but **extract it by double-clicking or with `ditto -x -k`** — `unzip` leaves `._*` resource forks inside the bundle and breaks the signature seal.
+`WattLite-2.1.zip` works too, but **extract it by double-clicking or with `ditto -x -k`** — `unzip` leaves `._*` resource forks inside the bundle and breaks the signature seal.
 
 After that the menu bar shows `⚡ 67W · In 10.2 W`. Click it for the panel, and turn on **Launch at login** if you want it permanent.
 
@@ -150,6 +152,11 @@ The CSV *is* the export format — no database, no background uploader. Delete t
 - **Missing artwork**: no official art available for the 30 W / 240 W Apple adapters. The adapter `Model` hex → A-number table has only two field-verified entries (`0x7016 → A2518`, `0x7002 → A2166`); there is no authoritative public source for the rest, so we do not guess.
 
 ## Release notes
+
+**v2.1** — session energy now speaks in everyday units.
+
+- The session card closes with one comparison line, picked from nine rungs (banana → AA cell → LED bulb → boiled water → TV → hair dryer → kWh → EV kilometres), always the largest rung reached so the count is ≥ 1
+- Same line in both interface languages; VoiceOver gets it as plain text without the emoji
 
 **v2.0** — first packaged release, downloadable as `.dmg` / `.zip`.
 

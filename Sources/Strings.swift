@@ -101,6 +101,17 @@ enum Strings {
         "时长": "Duration",
         "平均功率": "Average",
         "本次会话能量 %@ 瓦时": "Session energy %@ Wh",
+        "，约合 %@": ", about %@",
+        // 会话能量参照物：键由 SessionEnergy.references 动态给出，不进 T()/TF() 扫描
+        "🍌 ≈ %.1f 根香蕉": "🍌 ≈ %.1f bananas",
+        "🔋 ≈ %.1f 节 5 号电池": "🔋 ≈ %.1f AA cells",
+        "💡 ≈ %.1f 小时 LED 灯": "💡 ≈ %.1f h LED bulb",
+        "💧 ≈ %.1f 杯水烧开": "💧 ≈ %.1f mugs boiled",
+        "📺 ≈ %.1f 小时电视": "📺 ≈ %.1f h of TV",
+        "🫖 ≈ %.1f 升水烧开": "🫖 ≈ %.1f L boiled",
+        "💨 ≈ %.1f 次吹风机": "💨 ≈ %.1f hair-dryer runs",
+        "⚡ ≈ %.1f 度电": "⚡ ≈ %.1f kWh",
+        "🚗 ≈ %.1f 公里电动车": "🚗 ≈ %.1f km by EV",
         // 面板
         "电量 %d%%": "Battery %d%%",
         "本地运行 · 无网络请求": "Runs locally · No network requests",

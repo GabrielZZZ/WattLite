@@ -320,3 +320,26 @@ struct SessionEnergy {
 
     var averageWatts: Double? { seconds > 0 ? wh / (seconds / 3600) : nil }
 }
+
+// 能量参照物：minWh 是档位下限，unitWh 是一格多少瓦时（电动车两者不同），
+// 取不超过当前能量的最高档，所以计数恒 ≥ 1，不会出现「≈ 0.05 节电池」。
+// 🍌🔋💧🫖⚡ 是硬值；💡📺💨🚗 是电器标称功率 × 典型时长的量级估算，靠 ≈ 承担语义。
+extension SessionEnergy {
+    static let references: [(minWh: Double, unitWh: Double, zh: String)] = [
+        (0.122, 0.122, "🍌 ≈ %.1f 根香蕉"),
+        (3.0, 3.0, "🔋 ≈ %.1f 节 5 号电池"),
+        (9.0, 9.0, "💡 ≈ %.1f 小时 LED 灯"),
+        (23.3, 23.3, "💧 ≈ %.1f 杯水烧开"),
+        (60.0, 60.0, "📺 ≈ %.1f 小时电视"),
+        (93.0, 93.0, "🫖 ≈ %.1f 升水烧开"),
+        (250.0, 250.0, "💨 ≈ %.1f 次吹风机"),
+        (1000.0, 1000.0, "⚡ ≈ %.1f 度电"),
+        (3000.0, 150.0, "🚗 ≈ %.1f 公里电动车"),
+    ]
+
+    /// 返回中文格式串（即 Strings.en 的键）与计数；低于最小参照物则不给换算
+    static func comparison(_ wh: Double) -> (zh: String, count: Double)? {
+        guard let tier = references.last(where: { wh >= $0.minWh }) else { return nil }
+        return (tier.zh, wh / tier.unitWh)
+    }
+}

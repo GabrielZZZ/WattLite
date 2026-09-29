@@ -227,13 +227,31 @@ struct PanelView: View {
             HStack(alignment: .firstTextBaseline, spacing: 18) {
                 sessionStat(T("时长"), durationText(store.session.seconds))
                 sessionStat(T("平均功率"), store.session.averageWatts.map { "\(String(format: "%.1f", $0)) W" } ?? "—")
+                Spacer(minLength: 8)
+                if let comparison {
+                    Text(TF(comparison.zh, comparison.count))
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Style.surface, in: RoundedRectangle(cornerRadius: Style.cardRadius))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(TF("本次会话能量 %@ 瓦时", String(format: "%.1f", store.session.wh)))
+        .accessibilityLabel(accessibleSessionText)
+    }
+
+    private var comparison: (zh: String, count: Double)? { SessionEnergy.comparison(store.session.wh) }
+
+    // emoji 会被 VoiceOver 念成名字，换算改用纯文字重述一遍
+    private var accessibleSessionText: String {
+        var text = TF("本次会话能量 %@ 瓦时", String(format: "%.1f", store.session.wh))
+        if let comparison {
+            text += TF("，约合 %@", String(comparison.zh.drop(while: { !$0.isLetter && !$0.isNumber })))
+        }
+        return text
     }
 
     private func sessionStat(_ label: String, _ value: String) -> some View {

@@ -104,6 +104,22 @@ struct Checks {
         precondition(session.wh == 0 && session.seconds == 0 && session.averageWatts == nil)
         session.add(connected: false, watts: 18, at: now.addingTimeInterval(120))
         precondition(abs(session.wh - 18 * step) < 1e-9)
+        // 能量参照物：档位递增、每档计数 ≥ 1、动态键必须有英文（T() 扫描抓不到它们）
+        var previousMin = 0.0
+        for tier in SessionEnergy.references {
+            precondition(tier.minWh > previousMin && tier.minWh >= tier.unitWh, tier.zh)
+            precondition(Strings.en[tier.zh] != nil, tier.zh)
+            previousMin = tier.minWh
+        }
+        precondition(SessionEnergy.comparison(0.05) == nil)
+        for wh in [0.122, 2.9, 3.0, 8.9, 23.3, 59.9, 93.0, 249.9, 1000.0, 2999.9, 3000.0, 5000.0] {
+            guard let found = SessionEnergy.comparison(wh) else { preconditionFailure("缺档位: \(wh)") }
+            precondition(found.count >= 1, "档位边界会让计数小于 1: \(wh) → \(found)")
+        }
+        L10n.shared.lang = .en
+        precondition(TF(SessionEnergy.comparison(15.9)!.zh, SessionEnergy.comparison(15.9)!.count) == "💡 ≈ 1.8 h LED bulb")
+        L10n.shared.lang = .zh
+        precondition(TF(SessionEnergy.comparison(15.9)!.zh, SessionEnergy.comparison(15.9)!.count) == "💡 ≈ 1.8 小时 LED 灯")
         // 覆盖检查：Sources 里每个 T("…")/TF("…") 的中文键都必须有英文，否则英文界面会漏出中文
         var untranslated: [String] = []
         let sources = URL(fileURLWithPath: #filePath)
