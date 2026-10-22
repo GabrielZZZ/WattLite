@@ -18,6 +18,8 @@
 
 <p align="center"><b>English</b> · <a href="README.zh-CN.md">简体中文</a></p>
 
+> **Windows:** a native WPF build now lives in [`windows/`](windows/). Download it from the [Windows release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows).
+
 <p align="center">
   <img src="docs/screenshots/panel-en.png" width="340" alt="WattLite power panel">
 </p>

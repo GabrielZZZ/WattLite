@@ -1,0 +1,226 @@
+<Window x:Class="WattLite.PanelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WattLite" Width="380" Height="840"
+        WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
+        WindowStartupLocation="Manual" Background="{DynamicResource Canvas}"
+        Deactivated="OnDeactivated">
+    <Window.Resources>
+        <Style x:Key="GlyphButton" TargetType="Button">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Hover" Background="Transparent" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Hover" Property="Background" Value="{DynamicResource Hover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="Segment" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource Secondary}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Pill" Background="Transparent" CornerRadius="7" Padding="14,5" Margin="0,0,6,0">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Pill" Property="Background" Value="{DynamicResource AccentDim}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Primary}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Pill" Property="Background" Value="{DynamicResource SegmentHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border BorderBrush="{DynamicResource WindowBorder}" BorderThickness="1">
+        <Grid Margin="18">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 头部 -->
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="32" Height="32" CornerRadius="10" Background="{DynamicResource AccentDim}">
+                        <Path Data="M13 1 L5 13 H10.4 L8.6 23 L17 10.2 H11.4 Z" Fill="{DynamicResource Accent}"
+                              Stretch="Uniform" Margin="6"/>
+                    </Border>
+                    <TextBlock Text="WattLite" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource Primary}"
+                               VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 内容区 -->
+            <Grid Grid.Row="1" Margin="0,10,0,10">
+                <!-- 主面板 -->
+                <ScrollViewer x:Name="MainScroll" VerticalScrollBarVisibility="Hidden">
+                    <StackPanel>
+                        <!-- 大数字块（粒子背景） -->
+                        <Grid Height="104">
+                            <Canvas x:Name="ParticleCanvas" ClipToBounds="True"/>
+                            <!-- 信息按钮钉在块右上角，不随数字宽度漂移 -->
+                            <Button x:Name="InfoButton" Style="{StaticResource GlyphButton}" Content="&#xE946;"
+                                    Foreground="{DynamicResource Secondary}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    Click="OnInfoClick"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="ApproxMark" Text="≈" FontSize="24" Foreground="{DynamicResource Secondary}"
+                                               VerticalAlignment="Bottom" Margin="0,0,4,8" Typography.NumeralAlignment="Tabular"/>
+                                    <TextBlock x:Name="BigNumber" Text="—" FontFamily="Segoe UI Light" FontSize="48"
+                                               Foreground="{DynamicResource Primary}" Typography.NumeralAlignment="Tabular"/>
+                                    <TextBlock Text="W" FontSize="18" Foreground="{DynamicResource Secondary}"
+                                               VerticalAlignment="Bottom" Margin="4,0,0,8"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <Ellipse Width="6" Height="6" Fill="{DynamicResource Accent}" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="StateText" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource Primary}"
+                                               VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    <TextBlock x:Name="LiveTag" HorizontalAlignment="Right" FontSize="10"
+                                               Foreground="{DynamicResource Secondary}" VerticalAlignment="Center"
+                                               Margin="12,0,0,0"/>
+                                </StackPanel>
+                                <TextBlock x:Name="SubLine" FontSize="11" Foreground="{DynamicResource Secondary}" Margin="12,6,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- 趋势 -->
+                        <StackPanel Margin="0,12,0,0">
+                            <Grid>
+                                <TextBlock x:Name="TrendTitle" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource Primary}"/>
+                                <TextBlock x:Name="TrendMax" FontSize="10" Foreground="{DynamicResource Secondary}" HorizontalAlignment="Right"/>
+                            </Grid>
+                            <Grid Margin="0,6,0,0" Height="80">
+                                <Canvas x:Name="TrendCanvas"/>
+                                <TextBlock x:Name="TrendEmpty" Text="等待有效采样" FontSize="11" Foreground="{DynamicResource Secondary}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                            </Grid>
+                            <Grid>
+                                <TextBlock x:Name="TrendLeft" FontSize="9" Foreground="{DynamicResource Secondary}" Text="10 分钟前"/>
+                                <TextBlock x:Name="TrendRight" FontSize="9" Foreground="{DynamicResource Secondary}" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- 明细行 -->
+                        <StackPanel Margin="0,14,0,0">
+                            <Grid Margin="0,4">
+                                <TextBlock x:Name="CpuLabel" FontSize="12" Foreground="{DynamicResource Secondary}"/>
+                                <TextBlock x:Name="CpuValue" FontSize="12" Foreground="{DynamicResource Primary}"
+                                           HorizontalAlignment="Right" Typography.NumeralAlignment="Tabular"/>
+                            </Grid>
+                            <Grid Margin="0,4">
+                                <TextBlock x:Name="GpuLabel" FontSize="12" Foreground="{DynamicResource Secondary}"/>
+                                <TextBlock x:Name="GpuValue" FontSize="12" Foreground="{DynamicResource Primary}"
+                                           HorizontalAlignment="Right" Typography.NumeralAlignment="Tabular"/>
+                            </Grid>
+                            <Grid Margin="0,4">
+                                <TextBlock x:Name="LimitLabel" FontSize="12" Foreground="{DynamicResource Secondary}"/>
+                                <TextBlock x:Name="LimitValue" FontSize="12" Foreground="{DynamicResource Primary}"
+                                           HorizontalAlignment="Right" Typography.NumeralAlignment="Tabular"/>
+                            </Grid>
+                            <Grid Margin="0,4">
+                                <TextBlock x:Name="TempLabel" FontSize="12" Foreground="{DynamicResource Secondary}"/>
+                                <TextBlock x:Name="TempValue" FontSize="12" Foreground="{DynamicResource Primary}"
+                                           HorizontalAlignment="Right" Typography.NumeralAlignment="Tabular"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- 硬件卡：CPU / GPU / 内存各一张，每块物理硬盘各一张（徽标 + 型号 + 盘符/参数 + 读数） -->
+                        <StackPanel x:Name="HardwareCards" Margin="0,4,0,0"/>
+
+                        <!-- 会话能量卡（单行紧凑：能量 + 时长/平均/参照物） -->
+                        <Border Background="{DynamicResource Surface}" CornerRadius="12" Padding="12,10" Margin="0,6,0,0">
+                            <StackPanel>
+                                <Grid>
+                                    <TextBlock x:Name="SessionTitle" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource Primary}"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock x:Name="SessionWh" FontSize="18" FontWeight="Medium" Foreground="{DynamicResource Primary}"
+                                                   Typography.NumeralAlignment="Tabular"/>
+                                        <TextBlock Text="Wh" FontSize="11" Foreground="{DynamicResource Secondary}" VerticalAlignment="Bottom" Margin="2,0,0,1"/>
+                                    </StackPanel>
+                                </Grid>
+                                <TextBlock x:Name="SessionSub" FontSize="10" Foreground="{DynamicResource Secondary}" Margin="0,5,0,0"
+                                           TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- 设置页 -->
+                <ScrollViewer x:Name="SettingsPane" VerticalScrollBarVisibility="Hidden" Visibility="Collapsed">
+                    <StackPanel Margin="0,4,0,0">
+                        <TextBlock x:Name="SettingsHeadline" FontSize="27" FontWeight="Medium" Foreground="{DynamicResource Primary}"
+                                   LineHeight="36" Margin="0,0,0,24"/>
+                        <TextBlock x:Name="AppearanceHeadline" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Primary}" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <RadioButton x:Name="ThemeDark" Style="{StaticResource Segment}" GroupName="theme" Click="OnThemeClick"/>
+                            <RadioButton x:Name="ThemeLight" Style="{StaticResource Segment}" GroupName="theme" Click="OnThemeClick"/>
+                        </StackPanel>
+                        <TextBlock x:Name="AppearanceNote" FontSize="10" Foreground="{DynamicResource Secondary}" Margin="0,0,0,24"/>
+
+                        <TextBlock x:Name="LangHeadline" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Primary}" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <RadioButton x:Name="LangZh" Style="{StaticResource Segment}" GroupName="lang" Content="简体中文" Click="OnLangClick"/>
+                            <RadioButton x:Name="LangEn" Style="{StaticResource Segment}" GroupName="lang" Content="English" Click="OnLangClick"/>
+                        </StackPanel>
+                        <TextBlock x:Name="LangNote" FontSize="10" Foreground="{DynamicResource Secondary}" Margin="0,0,0,24"/>
+
+                        <TextBlock x:Name="IntervalHeadline" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Primary}" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <RadioButton x:Name="Seg1" Style="{StaticResource Segment}" GroupName="interval" Click="OnIntervalClick"/>
+                            <RadioButton x:Name="Seg2" Style="{StaticResource Segment}" GroupName="interval" Click="OnIntervalClick"/>
+                            <RadioButton x:Name="Seg5" Style="{StaticResource Segment}" GroupName="interval" Click="OnIntervalClick"/>
+                        </StackPanel>
+                        <TextBlock x:Name="IntervalNote" FontSize="10" Foreground="{DynamicResource Secondary}" Margin="0,0,0,24"/>
+
+                        <TextBlock x:Name="VersionNote" FontSize="10" Foreground="{DynamicResource Secondary}" LineHeight="16"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- 底栏 -->
+            <Grid Grid.Row="2">
+                <TextBlock x:Name="FooterCaption" FontSize="10" Foreground="{DynamicResource Secondary}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="GearButton" Style="{StaticResource GlyphButton}" Content="&#xE713;" Click="OnGearClick"/>
+                    <Button Style="{StaticResource GlyphButton}" Content="&#xE7E8;" Click="OnQuitClick"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 功率说明弹层 -->
+            <Popup x:Name="InfoPopup" PlacementTarget="{Binding ElementName=InfoButton}" Placement="Bottom"
+                   StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                <Border Background="{DynamicResource Popup}" CornerRadius="10" Padding="20" MaxWidth="310" Margin="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" ShadowDepth="2" Opacity="0.5"/>
+                    </Border.Effect>
+                    <TextBlock x:Name="InfoText" FontSize="12" Foreground="{DynamicResource Primary}"
+                               LineHeight="18" TextWrapping="Wrap"/>
+                </Border>
+            </Popup>
+        </Grid>
+    </Border>
+</Window>

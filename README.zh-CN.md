@@ -18,6 +18,8 @@
 
 <p align="center"><a href="README.md">English</a> · <b>简体中文</b></p>
 
+> **Windows 版**：原生 WPF 实现位于 [`windows/`](windows/)，可从 [Windows 发布页](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) 下载。
+
 <p align="center">
   <img src="docs/screenshots/live.gif" width="340" alt="实时面板">
 </p>
