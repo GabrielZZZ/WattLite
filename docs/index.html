@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WattLite — Live power for macOS and Windows</title>
+  <meta name="description" content="A native power monitor for macOS and Windows. Menu bar or taskbar, honest CPU, GPU, battery and disk readings, light and dark themes, zero network requests.">
+  <link rel="canonical" href="https://gabrielzzz.github.io/WattLite/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="WattLite">
+  <meta property="og:title" content="WattLite — Live power, at a glance">
+  <meta property="og:description" content="A native power monitor for macOS and Windows. One honest number, the components behind it, and zero network requests.">
+  <meta property="og:url" content="https://gabrielzzz.github.io/WattLite/">
+  <meta property="og:image" content="https://gabrielzzz.github.io/WattLite/screenshots/panel-en.png">
+  <meta property="og:image:alt" content="WattLite power panel">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0a0b0d">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="site.css">
+  <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-en="Skip to content" data-zh="跳到正文">Skip to content</a>
+
+  <header class="site-header" id="siteHeader">
+    <div class="shell header-inner">
+      <a class="brand" href="#top" aria-label="WattLite home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M13.4 2 4.8 13.1h5.6L10.2 22l8.9-11.4h-5.7L13.4 2Z" fill="currentColor"/></svg>
+        </span>
+        <span class="brand-text">WattLite</span>
+      </a>
+
+      <nav class="nav" aria-label="Main">
+        <a href="#features" data-en="Features" data-zh="功能">Features</a>
+        <a href="#screens" data-en="Screenshots" data-zh="截图">Screenshots</a>
+        <a href="#download" data-en="Download" data-zh="下载">Download</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="github-link" href="https://github.com/GabrielZZZ/WattLite" target="_blank" rel="noopener" aria-label="WattLite on GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" fill="currentColor"/></svg>
+          <span>GitHub</span>
+        </a>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" id="langEN" aria-pressed="true">EN</button>
+          <button type="button" id="langZH" aria-pressed="false">中文</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span><span data-en="macOS + Windows · native" data-zh="macOS + Windows · 原生">macOS + Windows · native</span></p>
+          <h1 data-en="Live power,<br><span class='grad'>at a glance.</span>" data-zh="实时功率，<br><span class='grad'>一眼掌握。</span>">Live power,<br><span class="grad">at a glance.</span></h1>
+          <p class="lede" data-en="A quiet, native power monitor for both platforms. One honest number, the components behind it, and zero network requests." data-zh="一个安静、原生的双平台功率监视器。一个诚实的主数字、组成它的每个部件，以及零网络请求。">A quiet, native power monitor for both platforms. One honest number, the components behind it, and zero network requests.</p>
+
+          <div class="hero-actions">
+            <a class="dl-btn js-mac" href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.1/WattLite-2.1.dmg">
+              <svg class="os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="currentColor"/></svg>
+              <span class="dl-copy"><strong>macOS</strong><small data-en="Download · Apple Silicon" data-zh="下载 · Apple Silicon">Download · Apple Silicon</small></span>
+              <span class="rec" data-en="Recommended" data-zh="推荐">Recommended</span>
+            </a>
+            <a class="dl-btn js-win" href="https://github.com/GabrielZZZ/WattLite/releases/download/v0.1.0-windows/WattLite-0.1.0-windows-x64.zip">
+              <svg class="os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.1 10.3 4v7.4H3V5.1Zm0 13.8 7.3 1.1v-7.3H3v6.2Zm8.3 1.2L21 21.6V12.7h-9.7v7.4Zm0-16 9.7-1.5v8.8h-9.7V4.1Z" fill="currentColor"/></svg>
+              <span class="dl-copy"><strong>Windows</strong><small data-en="Download · x64" data-zh="下载 · x64">Download · x64</small></span>
+              <span class="rec" data-en="Recommended" data-zh="推荐">Recommended</span>
+            </a>
+          </div>
+
+          <p class="hero-meta"><span data-en="Free &amp; open source" data-zh="免费开源">Free &amp; open source</span><span class="sep">·</span><span>MIT</span><span class="sep">·</span><span data-en="No telemetry" data-zh="无遥测">No telemetry</span></p>
+          <p class="hero-note" data-en="Prefer the details? <a href='#download'>Compare platforms</a>" data-zh="想先看细节？<a href='#download'>对比平台</a>">Prefer the details? <a href="#download">Compare platforms</a></p>
+        </div>
+
+        <div class="stage" aria-label="WattLite running on macOS and Windows">
+          <div class="stage-halo" aria-hidden="true"></div>
+          <figure class="shot shot-mac">
+            <div class="shot-bar"><span class="lights" aria-hidden="true"><i></i><i></i><i></i></span><span>macOS</span></div>
+            <img class="panel-img" src="screenshots/panel-en.png" data-en-src="screenshots/panel-en.png" data-zh-src="screenshots/panel.png" data-en-alt="WattLite power panel on macOS" data-zh-alt="macOS 上的 WattLite 功率面板" alt="WattLite power panel on macOS" width="754" height="1438">
+          </figure>
+          <figure class="shot shot-win">
+            <div class="shot-bar"><svg class="mini-os" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.1 10.3 4v7.4H3V5.1Zm0 13.8 7.3 1.1v-7.3H3v6.2Zm8.3 1.2L21 21.6V12.7h-9.7v7.4Zm0-16 9.7-1.5v8.8h-9.7V4.1Z" fill="currentColor"/></svg><span>Windows</span></div>
+            <img class="panel-img" src="screenshots/windows/panel-en.png" data-en-src="screenshots/windows/panel-en.png" data-zh-src="screenshots/windows/panel.png" data-en-alt="WattLite power panel on Windows" data-zh-alt="Windows 上的 WattLite 功率面板" alt="WattLite power panel on Windows" width="760" height="1680">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="shell">
+        <div class="section-head reveal">
+          <p class="kicker" data-en="Why WattLite" data-zh="为什么是 WattLite">Why WattLite</p>
+          <h2 data-en="Everything that matters.<br>Nothing that doesn't." data-zh="该有的都在，<br>多余的没有。">Everything that matters.<br>Nothing that doesn't.</h2>
+          <p class="section-sub" data-en="No dashboards to configure, no cloud account, no noise. Just the power the machine is actually using." data-zh="没有要配置的仪表盘、没有云账号、没有噪音。只有机器此刻真实的功耗。">No dashboards to configure, no cloud account, no noise. Just the power the machine is actually using.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature reveal">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/><path d="M19 3v4h-4"/></svg></span>
+            <h3 data-en="Honest, live power" data-zh="实时、诚实的功率">Honest, live power</h3>
+            <p data-en="SMC input watts on macOS. CPU package + GPU watts on Windows. No estimates dressed up as measurements." data-zh="macOS 读 SMC 输入功率；Windows 合并 CPU 封装与 GPU 功率。不把估算装成实测。">SMC input watts on macOS. CPU package + GPU watts on Windows. No estimates dressed up as measurements.</p>
+          </article>
+
+          <article class="feature reveal">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+            <h3 data-en="Where you already look" data-zh="就在你习惯的位置">Where you already look</h3>
+            <p data-en="A menu bar number on macOS. A taskbar badge on Windows. Always there, never in the way." data-zh="macOS 是菜单栏数字，Windows 是任务栏徽标。一直在，却不打扰。">A menu bar number on macOS. A taskbar badge on Windows. Always there, never in the way.</p>
+          </article>
+
+          <article class="feature reveal">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></span>
+            <h3 data-en="Every component" data-zh="每个部件都看得见">Every component</h3>
+            <p data-en="CPU, GPU and memory cards with vendor logos, live watts and the details that matter." data-zh="CPU、GPU、内存卡片，带厂商 logo、实时功率和关键参数。">CPU, GPU and memory cards with vendor logos, live watts and the details that matter.</p>
+          </article>
+
+          <article class="feature reveal">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="4"/><path d="M12 12h.01"/></svg></span>
+            <h3 data-en="Down to each disk" data-zh="细到每一块盘">Down to each disk</h3>
+            <p data-en="Every physical drive gets a card with its model, capacity, drive letters and its own write speed." data-zh="每块物理盘独立卡片：型号、容量、盘符和各自的写入速度。">Every physical drive gets a card with its model, capacity, drive letters and its own write speed.</p>
+          </article>
+
+          <article class="feature reveal">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/><path d="M17 3.5 17.7 5l1.5.7-1.5.7L17 8l-.7-1.6-1.5-.7 1.5-.7L17 3.5Z"/></svg></span>
+            <h3 data-en="Light or dark" data-zh="明暗随你">Light or dark</h3>
+            <p data-en="The Windows panel switches appearance instantly. The taskbar badge follows your taskbar, not the panel." data-zh="Windows 面板可即时切换明暗；任务栏徽标跟随系统任务栏，而不是面板主题。">The Windows panel switches appearance instantly. The taskbar badge follows your taskbar, not the panel.</p>
+          </article>
+
+          <article class="feature reveal">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 19 6v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3Z"/><path d="m9.5 12 1.8 1.8 3.4-3.8"/></svg></span>
+            <h3 data-en="Local by design" data-zh="本地优先">Local by design</h3>
+            <p data-en="No accounts, no telemetry, no network calls. History is a local CSV you can delete." data-zh="没有账号、没有遥测、没有网络请求。历史是本地 CSV，随时可删。">No accounts, no telemetry, no network calls. History is a local CSV you can delete.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="screens">
+      <div class="shell">
+        <div class="section-head reveal">
+          <p class="kicker" data-en="Windows taskbar" data-zh="Windows 任务栏">Windows taskbar</p>
+          <h2 data-en="Always there.<br>Never in the way." data-zh="一直在，<br>却不打扰。">Always there.<br>Never in the way.</h2>
+          <p class="section-sub" data-en="The badge sits left of the tray, stays transparent, and hides itself when a fullscreen app takes over. Click it for the full panel." data-zh="徽标停在托盘左侧，逐像素透明；全屏应用接管时自动隐藏。点它展开完整面板。">The badge sits left of the tray, stays transparent, and hides itself when a fullscreen app takes over. Click it for the full panel.</p>
+        </div>
+
+        <div class="taskbar-card reveal">
+          <div class="taskbar-copy">
+            <ul class="ticks">
+              <li data-en="CPU + GPU live watts" data-zh="CPU + GPU 实时功率">CPU + GPU live watts</li>
+              <li data-en="Follows taskbar light / dark" data-zh="跟随任务栏明暗">Follows taskbar light / dark</li>
+              <li data-en="Hides for fullscreen apps" data-zh="全屏应用自动隐藏">Hides for fullscreen apps</li>
+              <li data-en="One click for the full panel" data-zh="一键展开完整面板">One click for the full panel</li>
+            </ul>
+          </div>
+          <div class="taskbar-visual">
+            <img src="screenshots/windows/taskbar.png" data-en-alt="WattLite taskbar badge on Windows 11" data-zh-alt="Windows 11 任务栏上的 WattLite 徽标" alt="WattLite taskbar badge on Windows 11" width="916" height="82" decoding="async">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="personalize">
+      <div class="shell">
+        <div class="split-card reveal">
+          <div class="split-copy">
+            <p class="kicker" data-en="Make it yours" data-zh="按你的习惯来">Make it yours</p>
+            <h2 data-en="Light, dark,<br>中文, English." data-zh="深色、浅色、<br>中文、English。">Light, dark,<br>中文, English.</h2>
+            <p data-en="Everything applies instantly and is remembered. No restart, no config files to edit." data-zh="所有改动立即生效并记住。无需重启，也不用编辑配置文件。">Everything applies instantly and is remembered. No restart, no config files to edit.</p>
+            <ul class="ticks">
+              <li data-en="Appearance: Dark / Light" data-zh="外观：深色 / 浅色">Appearance: Dark / Light</li>
+              <li data-en="Language: 简体中文 / English" data-zh="语言：简体中文 / English">Language: 简体中文 / English</li>
+              <li data-en="Sampling: 1 / 2 / 5 seconds" data-zh="采样：1 / 2 / 5 秒">Sampling: 1 / 2 / 5 seconds</li>
+            </ul>
+          </div>
+          <div class="split-visual" aria-hidden="true">
+            <div class="settings-mock">
+              <div class="mock-head">
+                <span class="mock-logo"><svg viewBox="0 0 24 24" fill="none"><path d="M13.4 2 4.8 13.1h5.6L10.2 22l8.9-11.4h-5.7L13.4 2Z" fill="currentColor"/></svg></span>
+                <strong>WattLite</strong>
+              </div>
+              <p class="mock-title" data-en="Stay light.<br>Only the power that matters." data-zh="保持轻巧。<br>只看重要的功率。">Stay light.<br>Only the power that matters.</p>
+              <div class="mock-group">
+                <p class="mock-label" data-en="Appearance" data-zh="明暗外观">Appearance</p>
+                <div class="mock-seg">
+                  <span class="mock-on" data-en="Dark" data-zh="深色">Dark</span>
+                  <span data-en="Light" data-zh="浅色">Light</span>
+                </div>
+              </div>
+              <div class="mock-group">
+                <p class="mock-label" data-en="Interface language" data-zh="界面语言">Interface language</p>
+                <div class="mock-seg mock-lang">
+                  <span class="mock-zh-opt">简体中文</span>
+                  <span class="mock-en-opt">English</span>
+                </div>
+              </div>
+              <div class="mock-group">
+                <p class="mock-label" data-en="Background sampling" data-zh="后台采样间隔">Background sampling</p>
+                <div class="mock-seg">
+                  <span>1 s</span>
+                  <span class="mock-on">2 s</span>
+                  <span>5 s</span>
+                </div>
+              </div>
+              <div class="mock-foot">
+                <span data-en="Runs locally · No network requests" data-zh="本地运行 · 无网络请求">Runs locally · No network requests</span>
+                <span class="mock-icons">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v9"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="download">
+      <div class="shell">
+        <div class="section-head reveal">
+          <p class="kicker" data-en="Download" data-zh="下载">Download</p>
+          <h2 data-en="Choose your platform." data-zh="选择你的平台。">Choose your platform.</h2>
+          <p class="section-sub" data-en="Both builds are free, open source, and local-only. Downloads are served by GitHub Releases." data-zh="两个平台都免费开源、纯本地运行。下载由 GitHub Releases 提供。">Both builds are free, open source, and local-only. Downloads are served by GitHub Releases.</p>
+        </div>
+
+        <div class="download-grid">
+          <article class="platform-card js-mac reveal">
+            <div class="platform-top">
+              <span class="platform-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="currentColor"/></svg></span>
+              <span class="version stable">v2.1 · <span data-en="Stable" data-zh="稳定版">Stable</span></span>
+              <span class="rec rec-card" data-en="For this device" data-zh="适配当前设备">For this device</span>
+            </div>
+            <h3>macOS</h3>
+            <p class="platform-desc" data-en="The original menu bar monitor. SMC input power, battery view, adapter and Mac artwork, zero third-party dependencies." data-zh="最初的菜单栏功率监视器。SMC 输入功率、电池视图、适配器与机型产品图，零第三方依赖。">The original menu bar monitor. SMC input power, battery view, adapter and Mac artwork, zero third-party dependencies.</p>
+            <p class="platform-meta" data-en="Apple Silicon · macOS 14+" data-zh="Apple Silicon · macOS 14+">Apple Silicon · macOS 14+</p>
+            <div class="card-actions">
+              <a class="btn btn-primary" href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.1/WattLite-2.1.dmg">
+                <span data-en="Download .dmg" data-zh="下载 .dmg">Download .dmg</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>
+              </a>
+              <div class="secondary-links">
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.1/WattLite-2.1.zip" data-en=".zip instead" data-zh="改用 .zip">.zip instead</a>
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.1" data-en="Release notes" data-zh="发布说明">Release notes</a>
+              </div>
+            </div>
+            <details class="checksum">
+              <summary>SHA-256</summary>
+              <div class="hash-row"><code>b56465867ab63b9149f2dd50f07a24799a1bdd60bc2b477cbef76f56e706476f</code><button type="button" class="copy-btn" data-copy="b56465867ab63b9149f2dd50f07a24799a1bdd60bc2b477cbef76f56e706476f" data-en="Copy" data-zh="复制">Copy</button></div>
+              <p class="hash-note" data-en="WattLite-2.1.dmg · signed ad-hoc, not notarised" data-zh="WattLite-2.1.dmg · ad-hoc 签名，未公证">WattLite-2.1.dmg · signed ad-hoc, not notarised</p>
+            </details>
+          </article>
+
+          <article class="platform-card js-win reveal">
+            <div class="platform-top">
+              <span class="platform-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.1 10.3 4v7.4H3V5.1Zm0 13.8 7.3 1.1v-7.3H3v6.2Zm8.3 1.2L21 21.6V12.7h-9.7v7.4Zm0-16 9.7-1.5v8.8h-9.7V4.1Z" fill="currentColor"/></svg></span>
+              <span class="version preview">v0.1.0 · <span data-en="Preview" data-zh="预览版">Preview</span></span>
+              <span class="rec rec-card" data-en="For this device" data-zh="适配当前设备">For this device</span>
+            </div>
+            <h3>Windows</h3>
+            <p class="platform-desc" data-en="Native WPF. Taskbar badge, CPU + GPU cards, per-disk drive letters and write speeds, light and dark themes." data-zh="原生 WPF。任务栏徽标、CPU + GPU 卡片、逐盘盘符与写入速度、明暗主题。">Native WPF. Taskbar badge, CPU + GPU cards, per-disk drive letters and write speeds, light and dark themes.</p>
+            <p class="platform-meta" data-en="Windows 10/11 · x64 · NVIDIA for GPU" data-zh="Windows 10/11 · x64 · NVIDIA 显卡读取 GPU">Windows 10/11 · x64 · NVIDIA for GPU</p>
+            <div class="card-actions">
+              <a class="btn btn-primary" href="https://github.com/GabrielZZZ/WattLite/releases/download/v0.1.0-windows/WattLite-0.1.0-windows-x64.zip">
+                <span data-en="Download .zip" data-zh="下载 .zip">Download .zip</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>
+              </a>
+              <div class="secondary-links">
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v0.1.0-windows/WattLite-0.1.0-windows-x64.zip.sha256" data-en="SHA-256 file" data-zh="SHA-256 文件">SHA-256 file</a>
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows" data-en="Release notes" data-zh="发布说明">Release notes</a>
+              </div>
+            </div>
+            <details class="checksum">
+              <summary>SHA-256</summary>
+              <div class="hash-row"><code>75379a7b420597fa830a3d0618bdcf9b9205f21d3b5cb78f93a47fdc166fa2c3</code><button type="button" class="copy-btn" data-copy="75379a7b420597fa830a3d0618bdcf9b9205f21d3b5cb78f93a47fdc166fa2c3" data-en="Copy" data-zh="复制">Copy</button></div>
+              <p class="hash-note" data-en="Self-contained x64 · administrator required · unsigned" data-zh="自包含 x64 · 需要管理员权限 · 未签名">Self-contained x64 · administrator required · unsigned</p>
+            </details>
+          </article>
+        </div>
+
+        <p class="download-foot" data-en="Windows launch needs administrator rights for hardware sensors. SmartScreen may warn because the build is not code-signed. macOS builds are ad-hoc signed; first launch needs a one-time Gatekeeper approval." data-zh="Windows 版读取硬件传感器需要管理员权限；构建未做代码签名，SmartScreen 可能提示。macOS 版为 ad-hoc 签名，首次打开需在「隐私与安全性」放行一次。">Windows launch needs administrator rights for hardware sensors. SmartScreen may warn because the build is not code-signed. macOS builds are ad-hoc signed; first launch needs a one-time Gatekeeper approval.</p>
+        <p class="download-foot"><a href="https://github.com/GabrielZZZ/WattLite/releases" data-en="All releases and source code on GitHub →" data-zh="所有版本与源码在 GitHub →">All releases and source code on GitHub →</a></p>
+      </div>
+    </section>
+
+    <section class="section" id="truth">
+      <div class="shell">
+        <div class="section-head reveal">
+          <p class="kicker" data-en="No magic numbers" data-zh="不编数字">No magic numbers</p>
+          <h2 data-en="What the big number means." data-zh="大数字到底代表什么。">What the big number means.</h2>
+        </div>
+        <div class="truth-grid">
+          <article class="truth-card reveal">
+            <span class="truth-label">macOS</span>
+            <h3 data-en="Measured inside the Mac." data-zh="在 Mac 内部测量。">Measured inside the Mac.</h3>
+            <p data-en="SMC input power, read-only through the I/O Kit. The wall outlet sees a little more because the adapter itself burns some." data-zh="通过 I/O Kit 只读 SMC 输入功率。插座端会略高，因为适配器自身也会耗电。">SMC input power, read-only through the I/O Kit. The wall outlet sees a little more because the adapter itself burns some.</p>
+          </article>
+          <article class="truth-card reveal">
+            <span class="truth-label">Windows</span>
+            <h3 data-en="CPU package + GPU." data-zh="CPU 封装 + GPU。">CPU package + GPU.</h3>
+            <p data-en="The sum of the two main components, marked ≈. Memory, disks and power-supply loss are not included, so it is not wall power." data-zh="两个主要部件之和，标记为 ≈。不含内存、硬盘和电源转换损耗，因此不是插座端功率。">The sum of the two main components, marked ≈. Memory, disks and power-supply loss are not included, so it is not wall power.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="github">
+      <div class="shell">
+        <div class="github-card reveal">
+          <div class="github-copy">
+            <p class="kicker" data-en="Open source" data-zh="开源">Open source</p>
+            <h2 data-en="Built in the open." data-zh="在开放中构建。">Built in the open.</h2>
+            <p data-en="Read the source, file an issue, or star the project. The macOS app has no third-party dependencies; the Windows app is C# and XAML." data-zh="读源码、提 issue，或者给项目点个 star。macOS 版零第三方依赖；Windows 版是 C# + XAML。">Read the source, file an issue, or star the project. The macOS app has no third-party dependencies; the Windows app is C# and XAML.</p>
+          </div>
+          <div class="github-actions">
+            <a class="btn btn-primary" href="https://github.com/GabrielZZZ/WattLite" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" fill="currentColor"/></svg>
+              <span data-en="Star on GitHub" data-zh="在 GitHub 加星">Star on GitHub</span>
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/GabrielZZZ/WattLite" target="_blank" rel="noopener" data-en="Browse the source" data-zh="浏览源码">Browse the source</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <div class="footer-brand">
+        <span class="brand-mark small" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M13.4 2 4.8 13.1h5.6L10.2 22l8.9-11.4h-5.7L13.4 2Z" fill="currentColor"/></svg></span>
+        <div><strong>WattLite</strong><p data-en="A native power monitor for macOS and Windows." data-zh="macOS 与 Windows 的原生功率监视器。">A native power monitor for macOS and Windows.</p></div>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="https://github.com/GabrielZZZ/WattLite" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/GabrielZZZ/WattLite/releases" target="_blank" rel="noopener" data-en="Releases" data-zh="版本发布">Releases</a>
+        <a href="https://github.com/GabrielZZZ/WattLite/issues" target="_blank" rel="noopener">Issues</a>
+        <a href="https://github.com/GabrielZZZ/WattLite/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
+      </nav>
+      <p class="copyright">© 2026 Yifan Zhang Gabriel</p>
+      <p class="fineprint" data-en="Apple, macOS, Windows and NVIDIA are trademarks of their respective owners. WattLite is not affiliated with them." data-zh="Apple、macOS、Windows 与 NVIDIA 是各自所有者的商标。WattLite 与它们无隶属关系。">Apple, macOS, Windows and NVIDIA are trademarks of their respective owners. WattLite is not affiliated with them.</p>
+    </div>
+  </footer>
+
+  <script src="site.js"></script>
+</body>
+</html>

@@ -12,9 +12,10 @@
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="platform" src="https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20Windows%2010%2F11-blue">
   <img alt="network" src="https://img.shields.io/badge/network-none-orange">
+  <a href="https://gabrielzzz.github.io/WattLite/"><img alt="官网" src="https://img.shields.io/badge/website-live-3ad6cb"></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> · <b>简体中文</b></p>
+<p align="center"><a href="README.md">English</a> · <b>简体中文</b> · <a href="https://gabrielzzz.github.io/WattLite/">官网</a></p>
 
 <p align="center">
   <img src="docs/screenshots/panel.png" width="320" alt="macOS 功率面板">

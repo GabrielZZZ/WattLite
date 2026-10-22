@@ -12,13 +12,14 @@
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="platform" src="https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20Windows%2010%2F11-blue">
   <img alt="network" src="https://img.shields.io/badge/network-none-orange">
+  <a href="https://gabrielzzz.github.io/WattLite/"><img alt="website" src="https://img.shields.io/badge/website-live-3ad6cb"></a>
 </p>
 
-<p align="center"><b>English</b> · <a href="README.zh-CN.md">简体中文</a></p>
+<p align="center"><b>English</b> · <a href="README.zh-CN.md">简体中文</a> · <a href="https://gabrielzzz.github.io/WattLite/">Website</a></p>
 
 <p align="center">
   <img src="docs/screenshots/panel-en.png" width="320" alt="macOS power panel">
-  <img src="docs/screenshots/windows/panel.png" width="320" alt="Windows power panel">
+  <img src="docs/screenshots/windows/panel-en.png" width="320" alt="Windows power panel">
 </p>
 <p align="center"><sub>macOS menu bar panel · Windows taskbar panel</sub></p>
 
