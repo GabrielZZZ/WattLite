@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.1"><img alt="macOS 发布" src="https://img.shields.io/badge/macOS-v2.1-blue"></a>
-  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows"><img alt="Windows 发布" src="https://img.shields.io/badge/Windows-v0.1.0%20pre--release-orange"></a>
+  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows"><img alt="Windows 发布" src="https://img.shields.io/badge/Windows-v0.1.1%20pre--release-orange"></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="platform" src="https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20Windows%2010%2F11-blue">
   <img alt="network" src="https://img.shields.io/badge/network-none-orange">
@@ -28,19 +28,19 @@
 WattLite 是 macOS 与 Windows 上的原生功率监视器：显示机器此刻的真实功耗、保留一段趋势，并按部件拆开看——不控制硬件、不读取序列号、不发任何网络请求。
 
 - **macOS** 直接通过 I/O Kit 读取 SMC 输入功率和电池净功率。
-- **Windows** 把 LibreHardwareMonitor 的 CPU 封装功率与 `nvidia-smi` 的 NVIDIA GPU 功率相加；主数字带 `≈`，因为这是主要部件之和，不是插座端功率。
+- **Windows** 把 LibreHardwareMonitor 的 CPU 封装功率与 GPU 功率相加（NVIDIA / AMD / Intel），NVIDIA 的功耗上限与显存来自 `nvidia-smi`；主数字带 `≈`，因为这是主要部件之和，不是插座端功率。
 
 ## 平台概览
 
 | | macOS | Windows |
 | --- | --- | --- |
-| 状态 | v2.1，稳定版 | v0.1.0，首个版本（pre-release） |
+| 状态 | v2.1，稳定版 | v0.1.1，pre-release |
 | 常驻位置 | 菜单栏（`LSUIElement`，无 Dock 图标） | 托盘左侧的任务栏徽标 |
-| 主数字 | SMC 输入功率 / 电池净功率 | CPU 封装 + NVIDIA GPU 功率（`≈`） |
+| 主数字 | SMC 输入功率 / 电池净功率 | CPU 封装 + GPU 功率（`≈`） |
 | 卡片 | 适配器、本机、电池、会话能量 | CPU、GPU、内存、每块物理盘 |
 | 额外信息 | 适配器/机型产品图、电池视图 | 盘符、逐盘写入速度、手动明暗 |
-| 要求 | Apple Silicon、macOS 14+ | Windows 10 1809+/11 x64、NVIDIA 驱动、管理员 |
-| 下载 | `WattLite-2.1.dmg` | `WattLite-0.1.0-windows-x64-setup.exe`（安装版）或免安装 `.zip` |
+| 要求 | Apple Silicon、macOS 14+ | Windows 10 1809+/11 x64、管理员；GPU 传感器需要 NVIDIA / AMD / Intel 驱动 |
+| 下载 | `WattLite-2.1.dmg` | `WattLite-0.1.1-windows-x64-setup.exe`（安装版）或免安装 `.zip` |
 | 源码 | [`Sources/`](Sources) | [`windows/`](windows) |
 
 ## macOS
@@ -188,12 +188,12 @@ Windows 版是原生 WPF 程序。它在托盘左侧挂一个透明置顶徽标�
 
 ### 安装
 
-从 [Windows Release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) 下载 `WattLite-0.1.0-windows-x64-setup.exe` 并运行。安装程序会装到 `C:\Program Files\WattLite`，创建开始菜单快捷方式（可选桌面快捷方式），并写入「应用和功能」卸载项。同一发布页也提供免安装的 `WattLite-0.1.0-windows-x64.zip`，解压后直接运行 `WattLite.exe`。
+从 [Windows Release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows) 下载 `WattLite-0.1.1-windows-x64-setup.exe` 并运行。安装程序会装到 `C:\Program Files\WattLite`，创建开始菜单快捷方式（可选桌面快捷方式），并写入「应用和功能」卸载项。同一发布页也提供免安装的 `WattLite-0.1.1-windows-x64.zip`，解压后直接运行 `WattLite.exe`。
 
 - Windows 10 1809+ / Windows 11，64 位。两种包都自包含，无需安装 .NET。
 - **需要管理员权限**：安装到 Program Files 需要一次提权；应用本身读取 CPU 封装功率（LibreHardwareMonitor/PawnIO）和磁盘计数器（`IOCTL_DISK_PERFORMANCE`）也需要提权，UAC 弹窗点「是」。
 - 安装包和主程序都未做代码签名。SmartScreen 提示「Windows 已保护你的电脑」时，点「更多信息」→「仍要运行」。
-- GPU 功率、温度、功耗上限和显存需要 NVIDIA 驱动及 `nvidia-smi`；没有独显时 CPU 侧仍可用。
+- GPU 功率与温度来自 NVIDIA、AMD、Intel 显卡（驱动需暴露对应传感器）；NVIDIA 的功耗上限与显存来自 `nvidia-smi`。虚拟机的虚拟显卡不提供功率传感器，因此 Windows 虚拟机读不到 Mac 的真实功耗。
 - 卸载后设置与历史仍保留在 `%APPDATA%\WattLite`；删除该目录即可彻底重置。
 
 ### 从源码构建
@@ -205,7 +205,7 @@ dotnet run --project windows/Checks/Checks.csproj   # nvidia-smi 解析冒烟测
 dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=false -p:DebugType=None -o publish
 
-.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.0
+.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.1
 ```
 
 构建机需要 .NET 8 SDK 与 Inno Setup 6。安装器脚本在 [`windows/installer/`](windows/installer)；免安装 zip 则是发布目录加上 `README.txt` 与 `LICENSE`。更多说明见 [`windows/README.md`](windows/README.md)。
@@ -235,13 +235,18 @@ dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
 ### Windows
 
 - 主数字是**CPU 封装 + GPU**，不含主板、内存、硬盘和电源转换损耗，不是插座端功率，所以带 `≈`。
-- GPU 读数目前需要 **NVIDIA 显卡与驱动**（`nvidia-smi`）；没有独显时 CPU、内存和磁盘读数仍可用。
+- GPU 功率与温度可在 **NVIDIA、AMD、Intel** 显卡上读取（需要驱动暴露传感器）；NVIDIA 的功耗上限与显存通过 `nvidia-smi`。虚拟机的虚拟显卡没有功率传感器，因此 Windows 虚拟机读不到 Mac 的真实 GPU/CPU 功耗。
 - 需要**管理员权限**，且可执行文件未签名，首次运行可能遇到 SmartScreen 提示。
-- 暂无安装程序，Release 是自包含 `.zip`。
 - 盘符来自 WMI 分区关联；存储空间、动态磁盘等特殊布局可能无法映射全部卷。
-- Windows 版目前是 **0.1.0**，标记为 pre-release，边用边打磨。
+- Windows 版目前是 **0.1.1**，标记为 pre-release，边用边打磨。
 
 ## 更新记录
+
+**Windows v0.1.1** — AMD / Intel GPU 支持与启动修复（pre-release）。
+
+- GPU 传感器改为由 LibreHardwareMonitor 读取 NVIDIA / AMD / Intel；NVIDIA 的功耗上限与显存继续用 nvidia-smi
+- 启动即显示面板，托盘图标始终创建；启动异常会记录并提示，不再静默退出
+- 安装器通过 ShellExecuteEx 启动管理员程序，修复安装结束后的 740 错误
 
 **Windows v0.1.0** — 首个 Windows 原生版本（pre-release）。
 
@@ -273,4 +278,4 @@ MIT，见 [LICENSE](LICENSE)。
 
 - macOS 的 `Assets/Adapters/` 产品图为 Apple 官方素材，版权归 Apple Inc.
 - Windows 的 `windows/WattLite/Assets/vendors/` 厂商 logo 为各自商标，仅用于识别已安装的硬件。
-- Windows 版依赖 [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)（MPL-2.0），并通过 NVIDIA `nvidia-smi` 读取 GPU 数据。
+- Windows 版依赖 [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)（MPL-2.0）读取 CPU 与 NVIDIA / AMD / Intel GPU 传感器，并通过 NVIDIA `nvidia-smi` 读取功耗上限与显存。

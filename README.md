@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.1"><img alt="macOS release" src="https://img.shields.io/badge/macOS-v2.1-blue"></a>
-  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows"><img alt="Windows release" src="https://img.shields.io/badge/Windows-v0.1.0%20pre--release-orange"></a>
+  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows"><img alt="Windows release" src="https://img.shields.io/badge/Windows-v0.1.1%20pre--release-orange"></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="platform" src="https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20Windows%2010%2F11-blue">
   <img alt="network" src="https://img.shields.io/badge/network-none-orange">
@@ -28,19 +28,19 @@
 WattLite is a native power monitor for both platforms. It shows the power the machine is actually drawing, keeps a short trend, and breaks the number down by component — without controlling hardware, reading serial numbers, or making a single network request.
 
 - **macOS** reads SMC input power and battery net power straight from the I/O Kit.
-- **Windows** combines CPU package power from LibreHardwareMonitor with NVIDIA GPU power from `nvidia-smi`. The main number is marked `≈` because it is the sum of the main components, not wall power.
+- **Windows** combines CPU package power and GPU power from LibreHardwareMonitor (NVIDIA, AMD and Intel), using `nvidia-smi` for NVIDIA's power limit and VRAM. The main number is marked `≈` because it is the sum of the main components, not wall power.
 
 ## Platform overview
 
 | | macOS | Windows |
 | --- | --- | --- |
-| Status | v2.1, stable | v0.1.0, first release (pre-release) |
+| Status | v2.1, stable | v0.1.1, pre-release |
 | Lives in | Menu bar (`LSUIElement`, no Dock icon) | Taskbar badge next to the tray |
-| Main number | SMC input power / battery net power | CPU package + NVIDIA GPU power (`≈`) |
+| Main number | SMC input power / battery net power | CPU package + GPU power (`≈`) |
 | Cards | Adapter, Mac model, battery, session energy | CPU, GPU, memory, one card per physical disk |
 | Extras | Adapter artwork, Mac model artwork, battery view | Drive letters, per-disk write speed, light/dark switch |
-| Requirements | Apple Silicon, macOS 14+ | Windows 10 1809+/11 x64, NVIDIA driver, administrator |
-| Download | `WattLite-2.1.dmg` | `WattLite-0.1.0-windows-x64-setup.exe` (installer) or the portable `.zip` |
+| Requirements | Apple Silicon, macOS 14+ | Windows 10 1809+/11 x64, administrator; NVIDIA / AMD / Intel driver for GPU sensors |
+| Download | `WattLite-2.1.dmg` | `WattLite-0.1.1-windows-x64-setup.exe` (installer) or the portable `.zip` |
 | Source | [`Sources/`](Sources) | [`windows/`](windows) |
 
 ## macOS
@@ -185,12 +185,12 @@ The Windows build is a native WPF app. It places a transparent, always-on-top ba
 
 ### Install
 
-Download `WattLite-0.1.0-windows-x64-setup.exe` from the [Windows release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) and run it. Setup installs to `C:\Program Files\WattLite`, adds a Start Menu shortcut (and an optional desktop shortcut) and an entry under Apps & Features. A portable `WattLite-0.1.0-windows-x64.zip` is available on the same release; extract it and run `WattLite.exe` without installing.
+Download `WattLite-0.1.1-windows-x64-setup.exe` from the [Windows release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows) and run it. Setup installs to `C:\Program Files\WattLite`, adds a Start Menu shortcut (and an optional desktop shortcut) and an entry under Apps & Features. A portable `WattLite-0.1.1-windows-x64.zip` is available on the same release; extract it and run `WattLite.exe` without installing.
 
 - Windows 10 1809+ or Windows 11, x64. Both builds are self-contained, so no .NET install is needed.
 - **Administrator rights are required**: setup writes to Program Files, and the app itself needs elevation because CPU package power goes through LibreHardwareMonitor/PawnIO and disk counters use `IOCTL_DISK_PERFORMANCE`. Accept the UAC prompt.
 - Setup and the executable are not code-signed. If SmartScreen shows "Windows protected your PC", choose **More info → Run anyway**.
-- GPU power, temperature, power limit and VRAM need an NVIDIA driver with `nvidia-smi`. Without it, the CPU side still works.
+- GPU power and temperature are read from NVIDIA, AMD and Intel GPUs when their driver exposes sensors. NVIDIA also provides power limit and VRAM through `nvidia-smi`. Virtual machines' virtual GPUs expose no power sensors, so the Windows VM cannot show the Mac's real power.
 - Uninstalling keeps settings and history in `%APPDATA%\WattLite`; delete that folder to reset everything.
 
 ### Build from source
@@ -202,7 +202,7 @@ dotnet run --project windows/Checks/Checks.csproj   # nvidia-smi parser smoke te
 dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=false -p:DebugType=None -o publish
 
-.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.0
+.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.1
 ```
 
 Requires the .NET 8 SDK and Inno Setup 6 on the build machine. The installer script lives in [`windows/installer/`](windows/installer); the zip is the published folder plus `README.txt` and `LICENSE`. See [`windows/README.md`](windows/README.md) for details.
@@ -232,13 +232,18 @@ Neither version makes network requests, collects telemetry, requires an account,
 ### Windows
 
 - The main number is **CPU package + GPU only**; it excludes the motherboard, memory, disks and PSU conversion loss, so it is not wall power. It carries `≈` for that reason.
-- GPU readings currently require an **NVIDIA GPU and driver** (`nvidia-smi`). CPU, memory and disk readings still work without one.
+- GPU power and temperature are available on **NVIDIA, AMD and Intel** GPUs when the driver exposes sensors; NVIDIA's power limit and VRAM use `nvidia-smi`. A virtual machine's virtual GPU has no power sensor, so a Windows VM cannot read the Mac's real GPU/CPU power.
 - The app requires **administrator rights**, and the binary is unsigned, so SmartScreen may warn on first launch.
-- There is no installer yet — the release is a self-contained `.zip`.
 - Drive letters come from WMI partition associations; unusual storage layouts (Storage Spaces, dynamic disks) may not map every volume.
-- The Windows port is at **0.1.0** and marked as a pre-release while it gets real-world mileage.
+- The Windows port is at **0.1.1** and marked as a pre-release while it gets real-world mileage.
 
 ## Release notes
+
+**Windows v0.1.1** — AMD / Intel GPU support and launch fixes (pre-release).
+
+- GPU sensors now come from NVIDIA, AMD and Intel hardware through LibreHardwareMonitor; NVIDIA keeps `nvidia-smi` for power limit and VRAM
+- The panel opens on launch, the tray icon is always created, and a startup failure is logged/shown instead of exiting silently
+- The installer launches the admin app through ShellExecuteEx, fixing error 740 after installation
 
 **Windows v0.1.0** — first native Windows release (pre-release).
 
@@ -270,4 +275,4 @@ MIT, see [LICENSE](LICENSE).
 
 - macOS product images under `Assets/Adapters/` are Apple's own assets and remain © Apple Inc.
 - Windows vendor logos under `windows/WattLite/Assets/vendors/` are trademarks of their respective owners; they are used only to identify installed hardware.
-- The Windows build depends on [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (MPL-2.0) and calls NVIDIA's `nvidia-smi` for GPU telemetry.
+- The Windows build depends on [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (MPL-2.0) for CPU and NVIDIA / AMD / Intel GPU sensors, and calls NVIDIA's `nvidia-smi` for NVIDIA power limits and VRAM.

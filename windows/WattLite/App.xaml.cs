@@ -29,7 +29,7 @@ public partial class App : System.Windows.Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        Log($"START args=[{string.Join(' ', e.Args)}] admin={CpuReader.IsAdmin}");
+        Log($"START args=[{string.Join(' ', e.Args)}] admin={HardwareReader.IsAdmin}");
 
         DispatcherUnhandledException += (_, args) =>
         {

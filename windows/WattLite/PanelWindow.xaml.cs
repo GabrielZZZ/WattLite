@@ -135,7 +135,7 @@ public partial class PanelWindow : Window
 
     private void OnInfoClick(object sender, RoutedEventArgs e)
     {
-        InfoText.Text = Strings.T("主数字为 CPU 封装功率 + GPU 功率之和，即整机主要耗电部件，不含主板、内存、硬盘与电源转换损耗，故标 ≈。\n\nCPU 功率由主板传感器直读（LibreHardwareMonitor + PawnIO 驱动）；GPU 功率为 NVML 硬件直采。两者均为硬件真值。\n\n仅单个部件可用时，主数字退化为该部件真值并去掉 ≈；数据不可用时不估造数值。");
+        InfoText.Text = Strings.T("主数字为 CPU 封装功率 + GPU 功率之和，即整机主要耗电部件，不含主板、内存、硬盘与电源转换损耗，故标 ≈。\n\nCPU 功率由主板传感器直读（LibreHardwareMonitor + PawnIO 驱动）；GPU 功率优先通过 NVIDIA NVML / nvidia-smi 读取，AMD 与 Intel 显卡通过 LibreHardwareMonitor 读取。两者均为硬件真值。\n\n仅单个部件可用时，主数字退化为该部件真值并去掉 ≈；数据不可用时不估造数值。");
         InfoPopup.IsOpen = true;
     }
 
@@ -197,6 +197,7 @@ public partial class PanelWindow : Window
     private readonly List<(int Index, TextBlock Block)> _diskCardValues = new();
     private string? _cardsLang;
     private MachineInfo? _cardsMachine;
+    private string? _cardsGpuName;
     private bool _fitLogged;
 
     private void BuildHardwareCards()
@@ -216,7 +217,7 @@ public partial class PanelWindow : Window
         // nvidia-smi 可用量略低于标称（16 GB 卡报 16303 MiB ≈ 15.92 GiB），四舍五入回标称值
         if (_store.Latest.VramMiB is { } vram) gpuParams.Add(Strings.TF("{0} GB 显存", (int)Math.Round(vram / 1024.0)));
         if (_store.Latest.GpuLimitWatts is { } limit) gpuParams.Add(Strings.TF("上限 {0} W", PowerReading.PowerText(limit)));
-        var gpuName = machine?.GpuName ?? _store.Latest.GpuName;
+        var gpuName = _store.Latest.GpuName ?? machine?.GpuName;
         var gpuCard = Card(VendorBadge.Logo(gpuName), VendorBadge.Label(gpuName),
             gpuName ?? "—", string.Join(" · ", gpuParams), out var gpuPower, VendorBadge.RasterIcon(gpuName));
         _gpuCardPower = gpuPower;
@@ -465,10 +466,12 @@ public partial class PanelWindow : Window
         TempValue.Text = reading.TemperatureC is { } temp ? $"{PowerReading.PowerText(temp)} °C" : "—";
 
         // 硬件卡：语言切换或 Machine 异步检测结果到位时重建；功率值每帧刷新
-        if (_cardsLang != Strings.Lang || _cpuCardPower is null || _cardsMachine != _store.Machine)
+        if (_cardsLang != Strings.Lang || _cpuCardPower is null ||
+            _cardsMachine != _store.Machine || _cardsGpuName != _store.Latest.GpuName)
         {
             _cardsLang = Strings.Lang;
             _cardsMachine = _store.Machine;
+            _cardsGpuName = _store.Latest.GpuName;
             BuildHardwareCards();
         }
         // 溢出测量：Extent > Viewport 说明内容超高、需要滚动

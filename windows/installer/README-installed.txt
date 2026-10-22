@@ -1,4 +1,4 @@
-WattLite 0.1.0 for Windows
+WattLite 0.1.1 for Windows
 ==========================
 
 WattLite is a native power monitor. It lives next to the notification area:
@@ -12,8 +12,9 @@ Getting started
   processes, so accept the UAC prompt when starting the app.
 - The panel opens on launch. Close it and WattLite keeps running in the
   taskbar/tray; click the taskbar badge or tray icon to open it again.
-- GPU power, temperature, power limit and VRAM require an NVIDIA GPU with a
-  current driver and nvidia-smi on PATH or in the driver directory.
+- GPU power and temperature come from NVIDIA, AMD and Intel GPUs when the
+  driver exposes sensors. NVIDIA also reads power limit and VRAM through
+  nvidia-smi. Virtual machines' virtual GPUs expose no power sensors.
 - Click the gear button in the panel for appearance, language and sampling
   settings. Changes apply immediately.
 - The taskbar badge hides automatically when a fullscreen app covers the
@@ -44,7 +45,7 @@ License:  MIT (see LICENSE.txt)
 
 --
 
-WattLite 0.1.0 Windows 版
+WattLite 0.1.1 Windows 版
 =========================
 
 WattLite 是原生功率监视器：任务栏徽标和托盘图标显示 CPU + GPU 实时功率，
@@ -56,8 +57,9 @@ WattLite 是原生功率监视器：任务栏徽标和托盘图标显示 CPU + G
   驱动和逐盘性能计数器，因此启动时请在 UAC 弹窗点「是」。
 - 启动后会直接打开面板。关闭面板后程序继续在任务栏/托盘运行，点击任务栏
   徽标或托盘图标可再次打开。
-- GPU 功率、温度、功耗上限与显存需要 NVIDIA 显卡及较新的驱动，并确保
-  nvidia-smi 在 PATH 或驱动目录中。
+- GPU 功率与温度来自 NVIDIA、AMD、Intel 显卡（需要驱动暴露对应传感器）；
+  NVIDIA 还会通过 nvidia-smi 读取功耗上限与显存。虚拟机的虚拟显卡不提供
+  功率传感器。
 - 面板右下角的齿轮按钮可设置外观、界面语言和采样间隔，修改立即生效。
 - 全屏应用覆盖任务栏时，任务栏徽标会自动隐藏。
 

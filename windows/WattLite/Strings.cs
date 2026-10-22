@@ -36,8 +36,9 @@ public static class Strings
         ["实时读取"] = "Live",
         ["硬件直采"] = "Live hardware readout",
         // 问题
-        ["未找到 nvidia-smi，GPU 数据不可用"] = "nvidia-smi not found; GPU data unavailable",
-        ["GPU 数据不可用"] = "GPU data unavailable",
+        ["未检测到可用的 GPU 功率传感器"] = "No supported GPU power sensor found",
+        ["虚拟机未暴露 GPU 功率传感器"] = "This virtual machine does not expose a GPU power sensor",
+        ["GPU 功率传感器不可用"] = "GPU power sensor unavailable",
         ["CPU 功率需要管理员权限"] = "CPU power needs administrator",
         ["CPU 功率不可用"] = "CPU power unavailable",
         // 面板
@@ -73,8 +74,8 @@ public static class Strings
         ["设置"] = "Settings",
         ["退出 WattLite"] = "Quit WattLite",
         ["功率数据说明"] = "About these readings",
-        ["主数字为 CPU 封装功率 + GPU 功率之和，即整机主要耗电部件，不含主板、内存、硬盘与电源转换损耗，故标 ≈。\n\nCPU 功率由主板传感器直读（LibreHardwareMonitor + PawnIO 驱动）；GPU 功率为 NVML 硬件直采。两者均为硬件真值。\n\n仅单个部件可用时，主数字退化为该部件真值并去掉 ≈；数据不可用时不估造数值。"] =
-            "The big number is CPU package power + GPU power — the machine's main power draws. It excludes the board, memory, drives and PSU conversion losses, hence the ≈ marker.\n\nCPU power comes straight from the motherboard sensor (LibreHardwareMonitor + PawnIO driver); GPU power is sampled by NVML. Both are hardware readings.\n\nWhen only one part is available, the number degrades to that part's true value and drops the ≈; missing data is never estimated.",
+        ["主数字为 CPU 封装功率 + GPU 功率之和，即整机主要耗电部件，不含主板、内存、硬盘与电源转换损耗，故标 ≈。\n\nCPU 功率由主板传感器直读（LibreHardwareMonitor + PawnIO 驱动）；GPU 功率优先通过 NVIDIA NVML / nvidia-smi 读取，AMD 与 Intel 显卡通过 LibreHardwareMonitor 读取。两者均为硬件真值。\n\n仅单个部件可用时，主数字退化为该部件真值并去掉 ≈；数据不可用时不估造数值。"] =
+            "The big number is CPU package power + GPU power — the machine's main power draws. It excludes the board, memory, drives and PSU conversion losses, hence the ≈ marker.\n\nCPU power comes straight from the motherboard sensor (LibreHardwareMonitor + PawnIO driver); GPU power is read through NVIDIA NVML / nvidia-smi when available, and through LibreHardwareMonitor for AMD and Intel GPUs. Both are hardware readings.\n\nWhen only one part is available, the number degrades to that part's true value and drops the ≈; missing data is never estimated.",
         // 会话能量
         ["本次会话能量"] = "Session energy",
         ["时长"] = "Duration",
@@ -116,6 +117,5 @@ public static class Strings
         ["{0} W（主要部件）"] = "{0} W (main parts)",
         ["CPU {0} W"] = "CPU {0} W",
         ["GPU {0} W"] = "GPU {0} W",
-        ["GPU 上限 {0} W · {1} °C"] = "GPU limit {0} W · {1} °C",
     };
 }

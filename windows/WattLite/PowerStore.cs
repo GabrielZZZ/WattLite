@@ -26,18 +26,19 @@ public sealed class PowerStore : IDisposable
 
     public bool Visible { get; set; }
 
-    private readonly CpuReader _cpu = new();
+    private readonly HardwareReader _hardware = new();
     private readonly PowerLog _log = new();
     private DispatcherTimer? _timer;
     private readonly SemaphoreSlim _busy = new(1);
+    private Task _hardwareReady = Task.CompletedTask;
     private bool _sleeping;
     private int _generation;
 
     public void Start()
     {
         NvidiaSmi.Discover();
-        if (CpuReader.IsAdmin)
-            _cpu.Open();
+        // LHM 的 GPU 传感器需要 MTA；WPF 启动线程是 STA，放到线程池初始化
+        _hardwareReady = Task.Run(_hardware.Open);
         SystemEvents.PowerModeChanged += OnPowerMode;
         Task.Run(() => Machine = MachineInfo.Detect());
         Schedule();
@@ -72,29 +73,33 @@ public sealed class PowerStore : IDisposable
         var ticket = _generation;
         try
         {
-            var gpu = NvidiaSmi.ExecutablePath is null ? null : await NvidiaSmi.ReadAsync().ConfigureAwait(true);
-            var cpu = await Task.Run(_cpu.Read).ConfigureAwait(true);
+            await _hardwareReady.ConfigureAwait(true);
+            var nvidia = NvidiaSmi.ExecutablePath is null ? null : await NvidiaSmi.ReadAsync().ConfigureAwait(true);
+            var (cpu, lhmGpu) = await Task.Run(() => (_hardware.ReadCpu(), _hardware.ReadGpu())).ConfigureAwait(true);
             if (_sleeping || ticket != _generation) return;
 
+            var gpu = MergeGpu(nvidia, lhmGpu);
             string? issue = null;
-            if (NvidiaSmi.ExecutablePath is null)
-                issue = "未找到 nvidia-smi，GPU 数据不可用";
-            else if (gpu is null)
-                issue = "GPU 数据不可用";
-            if (!CpuReader.IsAdmin)
-                issue ??= null; // GPU 优先；CPU 问题仅在 GPU 正常时展示
+            if (gpu is null)
+                issue = MachineInfo.IsVirtualGpu(Machine?.GpuName)
+                    ? "虚拟机未暴露 GPU 功率传感器"
+                    : "未检测到可用的 GPU 功率传感器";
+            else if (gpu.Value.Watts is null)
+                issue = "GPU 功率传感器不可用";
+            if (HardwareReader.IsAdmin && cpu.Watts is null && issue is null)
+                issue = "CPU 功率不可用";
 
             var reading = new PowerReading
             {
                 CapturedAt = DateTime.Now,
-                CpuWatts = CpuReader.IsAdmin ? cpu.Watts : null,
-                GpuWatts = gpu?.DrawWatts,
-                GpuLimitWatts = gpu?.LimitWatts,
-                TemperatureC = gpu?.TempC,
+                CpuWatts = HardwareReader.IsAdmin ? cpu.Watts : null,
+                GpuWatts = gpu?.Watts,
+                GpuLimitWatts = gpu?.Limit,
+                TemperatureC = gpu?.Temp,
                 CpuName = cpu.Name,
                 GpuName = gpu?.Name,
-                VramMiB = gpu?.VramMiB,
-                Issue = issue ?? (CpuReader.IsAdmin && cpu.Watts is null ? "CPU 功率不可用" : null),
+                VramMiB = gpu?.Vram,
+                Issue = issue,
             };
 
             if (reading.TotalWatts is { } total)
@@ -148,9 +153,24 @@ public sealed class PowerStore : IDisposable
         SystemEvents.PowerModeChanged -= OnPowerMode;
     }
 
+    private readonly record struct GpuReading(
+        string? Name, double? Watts, double? Limit, double? Temp, long? Vram);
+
+    // nvidia-smi 提供 NVIDIA 的功耗上限/显存；其余字段和 AMD/Intel 由 LHM 补足
+    private static GpuReading? MergeGpu(NvidiaSmi.GpuSample? nvidia, HardwareReader.GpuRead? lhm)
+    {
+        if (nvidia is null && lhm is null) return null;
+        return new GpuReading(
+            nvidia?.Name ?? lhm?.Name,
+            nvidia?.DrawWatts ?? lhm?.Watts,
+            nvidia?.LimitWatts,
+            nvidia?.TempC ?? lhm?.TempC,
+            nvidia?.VramMiB ?? lhm?.VramMiB);
+    }
+
     public void Dispose()
     {
         Stop();
-        _cpu.Dispose();
+        _hardware.Dispose();
     }
 }

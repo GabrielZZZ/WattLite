@@ -40,7 +40,12 @@ public sealed class MachineInfo
             foreach (var item in gpu.Get())
             {
                 var name = item["Name"]?.ToString()?.Trim();
-                if (name is null || name.Length == 0 || name.Contains("Virtual", StringComparison.OrdinalIgnoreCase)) continue;
+                if (name is null || name.Length == 0) continue;
+                if (IsVirtualGpu(name))
+                {
+                    info.GpuName ??= name;
+                    continue;
+                }
                 info.GpuName = name;
                 // AdapterRAM 是 uint32，>4GB 显存会溢出，仅作低容量回退
                 if (item["AdapterRAM"] is { } ram)
@@ -88,6 +93,13 @@ public sealed class MachineInfo
         catch { }
         return info;
     }
+
+    public static bool IsVirtualGpu(string? name) =>
+        name is not null && new[]
+        {
+            "Parallels", "Virtual", "VMware", "VirtualBox", "Hyper-V",
+            "Microsoft Basic", "QEMU", "Standard VGA", "Citrix",
+        }.Any(token => name.Contains(token, StringComparison.OrdinalIgnoreCase));
 
     // 物理盘索引 → 盘符列表：分区表给出 DiskIndex，逻辑卷关联给出 DeviceID（C:, D:, …）
     private static Dictionary<int, List<string>> DiskDriveLetters()

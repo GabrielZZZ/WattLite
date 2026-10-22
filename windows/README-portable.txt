@@ -1,4 +1,4 @@
-WattLite 0.1.0 for Windows (x64)
+WattLite 0.1.1 for Windows (x64)
 ================================
 
 Portable build: keep every file in this folder together, then run WattLite.exe.
@@ -15,8 +15,9 @@ Getting started
   click the taskbar badge or tray icon to open it again.
 - If SmartScreen says "Windows protected your PC", choose More info > Run anyway.
   This build is not code-signed.
-- GPU power, temperature, power limit and VRAM require an NVIDIA GPU with a
-  current driver and nvidia-smi available on PATH or in the driver directory.
+- GPU power and temperature come from NVIDIA, AMD and Intel GPUs when the
+  driver exposes sensors. NVIDIA also reads power limit and VRAM through
+  nvidia-smi. Virtual machines' virtual GPUs expose no power sensors.
 - The taskbar badge hides automatically when a fullscreen app covers the
   taskbar. Right-click the tray icon for Settings or Exit.
 
@@ -39,7 +40,7 @@ License:  MIT (see LICENSE)
 
 --
 
-WattLite 0.1.0 Windows 版（x64）
+WattLite 0.1.1 Windows 版（x64）
 ================================
 
 免安装版：请保持本目录所有文件在一起，双击 WattLite.exe 运行。
@@ -56,8 +57,9 @@ WattLite 是原生功率监视器：任务栏徽标和托盘图标显示 CPU + G
   徽标或托盘图标可再次打开。
 - 若 SmartScreen 提示「Windows 已保护你的电脑」：更多信息 → 仍要运行。
   本构建未做代码签名。
-- GPU 功率、温度、功耗上限与显存需要 NVIDIA 显卡及较新的驱动，并确保
-  nvidia-smi 在 PATH 或驱动目录中。
+- GPU 功率与温度来自 NVIDIA、AMD、Intel 显卡（需要驱动暴露对应传感器）；
+  NVIDIA 还会通过 nvidia-smi 读取功耗上限与显存。虚拟机的虚拟显卡不提供
+  功率传感器。
 - 全屏应用覆盖任务栏时，任务栏徽标会自动隐藏。右键托盘图标可设置或退出。
 
 本地数据

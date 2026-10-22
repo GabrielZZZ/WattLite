@@ -133,9 +133,13 @@ public sealed class TrayIcon : IDisposable
             Strings.TF("CPU {0} W", PowerReading.PowerText(reading.CpuWatts)),
             Strings.TF("GPU {0} W", PowerReading.PowerText(reading.GpuWatts)),
         };
-        if (reading.GpuLimitWatts.HasValue || reading.TemperatureC.HasValue)
-            lines.Add(Strings.TF("GPU 上限 {0} W · {1} °C",
-                PowerReading.PowerText(reading.GpuLimitWatts), PowerReading.PowerText(reading.TemperatureC)));
+        var gpuDetails = new List<string>();
+        if (reading.GpuLimitWatts is { } limit)
+            gpuDetails.Add(Strings.TF("上限 {0} W", PowerReading.PowerText(limit)));
+        if (reading.TemperatureC is { } temp)
+            gpuDetails.Add($"{PowerReading.PowerText(temp)} °C");
+        if (gpuDetails.Count > 0)
+            lines.Add("GPU " + string.Join(" · ", gpuDetails));
         var machine = new[] { reading.CpuName, reading.GpuName }.Where(n => !string.IsNullOrEmpty(n));
         if (machine.Any()) lines.Add(string.Join(" · ", machine));
         var text = string.Join("\n", lines);

@@ -10,7 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>WattLite</AssemblyName>
     <RootNamespace>WattLite</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <AssemblyTitle>WattLite</AssemblyTitle>
     <Product>WattLite</Product>
