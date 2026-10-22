@@ -11,6 +11,13 @@
     <AssemblyName>WattLite</AssemblyName>
     <RootNamespace>WattLite</RootNamespace>
     <Version>0.1.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <AssemblyTitle>WattLite</AssemblyTitle>
+    <Product>WattLite</Product>
+    <Company>Yifan Zhang Gabriel</Company>
+    <Description>Native power monitor for Windows</Description>
+    <Copyright>© 2026 Yifan Zhang Gabriel</Copyright>
+    <ApplicationIcon>Assets\WattLite.ico</ApplicationIcon>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>

@@ -38,7 +38,7 @@ WattLite is a native power monitor for both platforms. It shows the power the ma
 | Cards | Adapter, Mac model, battery, session energy | CPU, GPU, memory, one card per physical disk |
 | Extras | Adapter artwork, Mac model artwork, battery view | Drive letters, per-disk write speed, light/dark switch |
 | Requirements | Apple Silicon, macOS 14+ | Windows 10 1809+/11 x64, NVIDIA driver, administrator |
-| Download | `WattLite-2.1.dmg` | `WattLite-0.1.0-windows-x64.zip` |
+| Download | `WattLite-2.1.dmg` | `WattLite-0.1.0-windows-x64-setup.exe` (installer) or the portable `.zip` |
 | Source | [`Sources/`](Sources) | [`windows/`](windows) |
 
 ## macOS
@@ -183,12 +183,13 @@ The Windows build is a native WPF app. It places a transparent, always-on-top ba
 
 ### Install
 
-Download `WattLite-0.1.0-windows-x64.zip` from the [Windows release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows), extract it, and run `WattLite.exe`. The build is self-contained, so no .NET install is needed.
+Download `WattLite-0.1.0-windows-x64-setup.exe` from the [Windows release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) and run it. Setup installs to `C:\Program Files\WattLite`, adds a Start Menu shortcut (and an optional desktop shortcut) and an entry under Apps & Features. A portable `WattLite-0.1.0-windows-x64.zip` is available on the same release; extract it and run `WattLite.exe` without installing.
 
-- Windows 10 1809+ or Windows 11, x64.
-- **Administrator rights are required** (CPU package power goes through LibreHardwareMonitor/PawnIO; disk counters use `IOCTL_DISK_PERFORMANCE`). Accept the UAC prompt.
-- The executable is not code-signed. If SmartScreen shows "Windows protected your PC", choose **More info → Run anyway**.
+- Windows 10 1809+ or Windows 11, x64. Both builds are self-contained, so no .NET install is needed.
+- **Administrator rights are required**: setup writes to Program Files, and the app itself needs elevation because CPU package power goes through LibreHardwareMonitor/PawnIO and disk counters use `IOCTL_DISK_PERFORMANCE`. Accept the UAC prompt.
+- Setup and the executable are not code-signed. If SmartScreen shows "Windows protected your PC", choose **More info → Run anyway**.
 - GPU power, temperature, power limit and VRAM need an NVIDIA driver with `nvidia-smi`. Without it, the CPU side still works.
+- Uninstalling keeps settings and history in `%APPDATA%\WattLite`; delete that folder to reset everything.
 
 ### Build from source
 
@@ -198,9 +199,11 @@ dotnet run --project windows/Checks/Checks.csproj   # nvidia-smi parser smoke te
 
 dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=false -p:DebugType=None -o publish
+
+.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.0
 ```
 
-Requires the .NET 8 SDK on the build machine. The published folder is what ships in the release zip; see [`windows/README.md`](windows/README.md) for details.
+Requires the .NET 8 SDK and Inno Setup 6 on the build machine. The installer script lives in [`windows/installer/`](windows/installer); the zip is the published folder plus `README.txt` and `LICENSE`. See [`windows/README.md`](windows/README.md) for details.
 
 ### Windows history
 
@@ -242,7 +245,8 @@ Neither version makes network requests, collects telemetry, requires an account,
 - Each physical disk shows its drive letters (`C:`, `D: E:`, …) and its own write speed
 - Manual light/dark appearance, Chinese/English UI, persisted settings
 - Local-only CSV history in `%APPDATA%\WattLite\history`; no network requests
-- Self-contained x64 build; administrator rights required
+- Standard installer (Program Files, Start Menu/optional desktop shortcut, uninstall entry, Chinese/English wizard) plus a portable zip; both self-contained x64, administrator rights required
+- Branded app icon and file metadata
 
 **macOS v2.1** — session energy now speaks in everyday units.
 

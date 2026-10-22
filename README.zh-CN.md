@@ -38,7 +38,7 @@ WattLite 是 macOS 与 Windows 上的原生功率监视器：显示机器此刻�
 | 卡片 | 适配器、本机、电池、会话能量 | CPU、GPU、内存、每块物理盘 |
 | 额外信息 | 适配器/机型产品图、电池视图 | 盘符、逐盘写入速度、手动明暗 |
 | 要求 | Apple Silicon、macOS 14+ | Windows 10 1809+/11 x64、NVIDIA 驱动、管理员 |
-| 下载 | `WattLite-2.1.dmg` | `WattLite-0.1.0-windows-x64.zip` |
+| 下载 | `WattLite-2.1.dmg` | `WattLite-0.1.0-windows-x64-setup.exe`（安装版）或免安装 `.zip` |
 | 源码 | [`Sources/`](Sources) | [`windows/`](windows) |
 
 ## macOS
@@ -186,12 +186,13 @@ Windows 版是原生 WPF 程序。它在托盘左侧挂一个透明置顶徽标�
 
 ### 安装
 
-从 [Windows Release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) 下载 `WattLite-0.1.0-windows-x64.zip`，解压后运行 `WattLite.exe`。自包含，无需安装 .NET。
+从 [Windows Release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) 下载 `WattLite-0.1.0-windows-x64-setup.exe` 并运行。安装程序会装到 `C:\Program Files\WattLite`，创建开始菜单快捷方式（可选桌面快捷方式），并写入「应用和功能」卸载项。同一发布页也提供免安装的 `WattLite-0.1.0-windows-x64.zip`，解压后直接运行 `WattLite.exe`。
 
-- Windows 10 1809+ / Windows 11，64 位。
-- **需要管理员权限**（CPU 封装功率走 LibreHardwareMonitor/PawnIO，磁盘计数器走 `IOCTL_DISK_PERFORMANCE`），UAC 弹窗点「是」。
-- 未做代码签名。SmartScreen 提示「Windows 已保护你的电脑」时，点「更多信息」→「仍要运行」。
+- Windows 10 1809+ / Windows 11，64 位。两种包都自包含，无需安装 .NET。
+- **需要管理员权限**：安装到 Program Files 需要一次提权；应用本身读取 CPU 封装功率（LibreHardwareMonitor/PawnIO）和磁盘计数器（`IOCTL_DISK_PERFORMANCE`）也需要提权，UAC 弹窗点「是」。
+- 安装包和主程序都未做代码签名。SmartScreen 提示「Windows 已保护你的电脑」时，点「更多信息」→「仍要运行」。
 - GPU 功率、温度、功耗上限和显存需要 NVIDIA 驱动及 `nvidia-smi`；没有独显时 CPU 侧仍可用。
+- 卸载后设置与历史仍保留在 `%APPDATA%\WattLite`；删除该目录即可彻底重置。
 
 ### 从源码构建
 
@@ -201,9 +202,11 @@ dotnet run --project windows/Checks/Checks.csproj   # nvidia-smi 解析冒烟测
 
 dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=false -p:DebugType=None -o publish
+
+.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.0
 ```
 
-构建机需要 .NET 8 SDK。发布目录就是 Release 里的 zip 内容；更多说明见 [`windows/README.md`](windows/README.md)。
+构建机需要 .NET 8 SDK 与 Inno Setup 6。安装器脚本在 [`windows/installer/`](windows/installer)；免安装 zip 则是发布目录加上 `README.txt` 与 `LICENSE`。更多说明见 [`windows/README.md`](windows/README.md)。
 
 ### Windows 历史数据
 
@@ -245,7 +248,8 @@ dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
 - 每块物理盘显示盘符（`C:`、`D: E:`…）与各自的写入速度
 - 手动明暗外观、中英双语、设置持久化
 - 历史记录按分钟写入 `%APPDATA%\WattLite\history`，纯本地，无网络请求
-- 自包含 x64 构建，需要管理员权限
+- 标准安装程序（Program Files、开始菜单/可选桌面快捷方式、卸载项、中英双语向导）+ 免安装 zip；均为自包含 x64，需要管理员权限
+- 新增品牌应用图标与文件元数据
 
 **macOS v2.1** — 会话能量改用生活单位。
 
