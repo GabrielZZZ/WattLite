@@ -45,7 +45,8 @@ and verifies SHA-256 before running either.
 ## Signature
 
 `windows.json.sig` is the base64 encoding of a 64-byte raw ECDSA P-256
-signature (`r || s`) over the exact UTF-8 bytes of `windows.json`.
+signature (`r || s`) over the exact UTF-8 bytes of `windows.json`. The file is
+plain base64 text; trim surrounding whitespace before decoding.
 
 - Curve: NIST P-256
 - Hash: SHA-256
@@ -76,15 +77,17 @@ still a 404.
 
 ## macOS counterpart
 
-The Mac app can share the same scheme with its own files:
+The Mac app uses its own files with the same signature scheme and public key:
 
 ```text
 docs/updates/macos.json
 docs/updates/macos.json.sig
 ```
 
-Suggested fields: `version`, `build` (CFBundleVersion), `url` (zip), `mirror`,
-`sha256`, `min_os`. Verify with CryptoKit:
+Fields: `version` (string, e.g. `"2.2"`), `build` (integer, compares against
+CFBundleVersion), `url` (zip), `mirror`, `sha256`, `min_os` (string, e.g.
+`"14.0"`), and optional `published`, `notes_zh`, `notes_en`. Verify with
+CryptoKit:
 
 ```swift
 let publicKey = try P256.Signing.PublicKey(x963Representation: publicKeyData)

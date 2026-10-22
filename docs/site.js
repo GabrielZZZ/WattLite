@@ -8,8 +8,8 @@
     zh: "WattLite — macOS 与 Windows 实时功率监视器",
   };
   const DESCRIPTIONS = {
-    en: "A native power monitor for macOS and Windows. Menu bar or taskbar, honest CPU, GPU, battery and disk readings, light and dark themes, zero network requests.",
-    zh: "macOS 与 Windows 的原生功率监视器。菜单栏或任务栏、诚实的 CPU / GPU / 电池 / 硬盘读数、明暗主题，零网络请求。",
+    en: "A native power monitor for macOS and Windows. Menu bar or taskbar, honest CPU, GPU, battery and disk readings, light and dark themes, and optional signed auto-updates.",
+    zh: "macOS 与 Windows 的原生功率监视器。菜单栏或任务栏、诚实的 CPU / GPU / 电池 / 硬盘读数、明暗主题，以及可关闭的签名自动更新。",
   };
   const STORE_KEY = "wattlite-site-lang";
 

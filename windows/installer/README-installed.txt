@@ -38,11 +38,14 @@ Local data
   settings.json   appearance, language, sampling and update settings
   history\        one CSV per day, aggregated per minute
   debug.log       minimal local diagnostics
+
+%LOCALAPPDATA%\WattLite\
   updates\        downloaded installers awaiting installation
 
 WattLite's only network traffic is checking for updates and downloading them.
 It sends no telemetry or personal data, and update checks can be disabled in
-Settings. Delete the folder above to reset the app or clear the history.
+Settings. Delete the `%APPDATA%` folder to reset the app or clear its history;
+the `%LOCALAPPDATA%` folder only holds cached installers.
 
 Links
 -----
@@ -86,10 +89,13 @@ WattLite 是原生功率监视器：任务栏徽标和托盘图标显示 CPU + G
   settings.json   外观、语言、采样与更新设置
   history\        按天保存的分钟级 CSV
   debug.log       少量本地诊断日志
+
+%LOCALAPPDATA%\WattLite\
   updates\        已下载、等待安装的安装包
 
 WattLite 的联网行为只有检查和下载更新，不发送遥测或个人数据；自动检查可在
-设置里关闭。删除上述目录即可重置应用或清空历史。
+设置里关闭。删除 `%APPDATA%` 目录即可重置应用或清空历史；`%LOCALAPPDATA%`
+目录只存放已下载的安装包。
 
 链接
 ----

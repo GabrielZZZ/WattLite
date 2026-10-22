@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>WattLite — Live power for macOS and Windows</title>
-  <meta name="description" content="A native power monitor for macOS and Windows. Menu bar or taskbar, honest CPU, GPU, battery and disk readings, light and dark themes, zero network requests.">
+  <meta name="description" content="A native power monitor for macOS and Windows. Menu bar or taskbar, honest CPU, GPU, battery and disk readings, light and dark themes, and optional signed auto-updates.">
   <link rel="canonical" href="https://gabrielzzz.github.io/WattLite/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="WattLite">
   <meta property="og:title" content="WattLite — Live power, at a glance">
-  <meta property="og:description" content="A native power monitor for macOS and Windows. One honest number, the components behind it, and zero network requests.">
+  <meta property="og:description" content="A native power monitor for macOS and Windows. One honest number, the components behind it, and only optional signed update checks.">
   <meta property="og:url" content="https://gabrielzzz.github.io/WattLite/">
   <meta property="og:image" content="https://gabrielzzz.github.io/WattLite/screenshots/panel-en.png">
   <meta property="og:image:alt" content="WattLite power panel">
@@ -58,15 +58,15 @@
         <div class="hero-copy">
           <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span><span data-en="macOS + Windows · native" data-zh="macOS + Windows · 原生">macOS + Windows · native</span></p>
           <h1 data-en="Live power,<br><span class='grad'>at a glance.</span>" data-zh="实时功率，<br><span class='grad'>一眼掌握。</span>">Live power,<br><span class="grad">at a glance.</span></h1>
-          <p class="lede" data-en="A quiet, native power monitor for both platforms. One honest number, the components behind it, and zero network requests." data-zh="一个安静、原生的双平台功率监视器。一个诚实的主数字、组成它的每个部件，以及零网络请求。">A quiet, native power monitor for both platforms. One honest number, the components behind it, and zero network requests.</p>
+          <p class="lede" data-en="A quiet, native power monitor for both platforms. One honest number, the components behind it, and no telemetry. Signed update checks are optional." data-zh="一个安静、原生的双平台功率监视器。一个诚实的主数字、组成它的每个部件，不采集遥测；签名更新检查可以关闭。">A quiet, native power monitor for both platforms. One honest number, the components behind it, and no telemetry. Signed update checks are optional.</p>
 
           <div class="hero-actions">
-            <a class="dl-btn js-mac" href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.1/WattLite-2.1.dmg">
+            <a class="dl-btn js-mac" href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.2/WattLite-2.2.dmg">
               <svg class="os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="currentColor"/></svg>
               <span class="dl-copy"><strong>macOS</strong><small data-en="Download · Apple Silicon" data-zh="下载 · Apple Silicon">Download · Apple Silicon</small></span>
               <span class="rec" data-en="Recommended" data-zh="推荐">Recommended</span>
             </a>
-            <a class="dl-btn js-win" href="https://github.com/GabrielZZZ/WattLite/releases/download/v0.1.1-windows/WattLite-0.1.1-windows-x64-setup.exe">
+            <a class="dl-btn js-win" href="https://github.com/GabrielZZZ/WattLite/releases/download/v1.0.0-windows/WattLite-1.0.0-windows-x64-setup.exe">
               <svg class="os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.1 10.3 4v7.4H3V5.1Zm0 13.8 7.3 1.1v-7.3H3v6.2Zm8.3 1.2L21 21.6V12.7h-9.7v7.4Zm0-16 9.7-1.5v8.8h-9.7V4.1Z" fill="currentColor"/></svg>
               <span class="dl-copy"><strong>Windows</strong><small data-en="Installer · x64" data-zh="安装版 · x64">Installer · x64</small></span>
               <span class="rec" data-en="Recommended" data-zh="推荐">Recommended</span>
@@ -134,7 +134,7 @@
           <article class="feature reveal">
             <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 19 6v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3Z"/><path d="m9.5 12 1.8 1.8 3.4-3.8"/></svg></span>
             <h3 data-en="Local by design" data-zh="本地优先">Local by design</h3>
-            <p data-en="No accounts, no telemetry, no network calls. History is a local CSV you can delete." data-zh="没有账号、没有遥测、没有网络请求。历史是本地 CSV，随时可删。">No accounts, no telemetry, no network calls. History is a local CSV you can delete.</p>
+            <p data-en="No accounts, no telemetry. The only network calls are signed update checks you can switch off. History is a local CSV you can delete." data-zh="没有账号、没有遥测。唯一的网络行为是可关闭的签名更新检查。历史是本地 CSV，随时可删。">No accounts, no telemetry. The only network calls are signed update checks you can switch off. History is a local CSV you can delete.</p>
           </article>
         </div>
       </div>
@@ -255,7 +255,7 @@
                 </div>
               </div>
               <div class="mock-foot">
-                <span data-en="Runs locally · No network requests" data-zh="本地运行 · 无网络请求">Runs locally · No network requests</span>
+                <span data-en="Runs locally · Update checks optional" data-zh="本地运行 · 更新检查可关">Runs locally · Update checks optional</span>
                 <span class="mock-icons">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v9"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/></svg>
@@ -272,7 +272,7 @@
         <div class="section-head reveal">
           <p class="kicker" data-en="Download" data-zh="下载">Download</p>
           <h2 data-en="Choose your platform." data-zh="选择你的平台。">Choose your platform.</h2>
-          <p class="section-sub" data-en="Both builds are free, open source, and local-only. Downloads are served by GitHub Releases." data-zh="两个平台都免费开源、纯本地运行。下载由 GitHub Releases 提供。">Both builds are free, open source, and local-only. Downloads are served by GitHub Releases.</p>
+          <p class="section-sub" data-en="Both builds are free, open source, and local-first. Downloads are served by GitHub Releases, and both apps update themselves from a signed feed." data-zh="两个平台都免费开源、本地优先。下载由 GitHub Releases 提供，两个应用都通过签名更新源自动升级。">Both builds are free, open source, and local-first. Downloads are served by GitHub Releases, and both apps update themselves from a signed feed.</p>
           <div class="line-picker">
             <span class="line-label" id="lineLabel" data-en="Download line" data-zh="下载线路">Download line</span>
             <div class="line-switch" role="group" aria-labelledby="lineLabel">
@@ -291,59 +291,62 @@
           <article class="platform-card js-mac reveal">
             <div class="platform-top">
               <span class="platform-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="currentColor"/></svg></span>
-              <span class="version stable">v2.1 · <span data-en="Stable" data-zh="稳定版">Stable</span></span>
+              <span class="version stable">v2.2 · <span data-en="Stable" data-zh="稳定版">Stable</span></span>
               <span class="rec rec-card" data-en="For this device" data-zh="适配当前设备">For this device</span>
             </div>
             <h3>macOS</h3>
-            <p class="platform-desc" data-en="The original menu bar monitor. SMC input power, battery view, adapter and Mac artwork, zero third-party dependencies." data-zh="最初的菜单栏功率监视器。SMC 输入功率、电池视图、适配器与机型产品图，零第三方依赖。">The original menu bar monitor. SMC input power, battery view, adapter and Mac artwork, zero third-party dependencies.</p>
-            <p class="platform-meta" data-en="Apple Silicon · macOS 14+" data-zh="Apple Silicon · macOS 14+">Apple Silicon · macOS 14+</p>
+            <p class="platform-desc" data-en="The original menu bar monitor. SMC input power, battery view, adapter and Mac artwork, zero third-party dependencies, signed auto-updates." data-zh="最初的菜单栏功率监视器。SMC 输入功率、电池视图、适配器与机型产品图，零第三方依赖，支持签名自动更新。">The original menu bar monitor. SMC input power, battery view, adapter and Mac artwork, zero third-party dependencies, signed auto-updates.</p>
+            <p class="platform-meta" data-en="Apple Silicon · macOS 14+ · auto-update" data-zh="Apple Silicon · macOS 14+ · 自动更新">Apple Silicon · macOS 14+ · auto-update</p>
             <div class="card-actions">
-              <a class="btn btn-primary" href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.1/WattLite-2.1.dmg">
+              <a class="btn btn-primary" href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.2/WattLite-2.2.dmg">
                 <span data-en="Download .dmg" data-zh="下载 .dmg">Download .dmg</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>
               </a>
               <div class="secondary-links">
-                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.1/WattLite-2.1.zip" data-en=".zip instead" data-zh="改用 .zip">.zip instead</a>
-                <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.1" data-en="Release notes" data-zh="发布说明">Release notes</a>
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v2.2/WattLite-2.2.zip" data-en=".zip instead" data-zh="改用 .zip">.zip instead</a>
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.2" data-en="Release notes" data-zh="发布说明">Release notes</a>
               </div>
             </div>
             <details class="checksum">
               <summary>SHA-256</summary>
-              <div class="hash-row"><code>b56465867ab63b9149f2dd50f07a24799a1bdd60bc2b477cbef76f56e706476f</code><button type="button" class="copy-btn" data-copy="b56465867ab63b9149f2dd50f07a24799a1bdd60bc2b477cbef76f56e706476f" data-en="Copy" data-zh="复制">Copy</button></div>
-              <p class="hash-note" data-en="WattLite-2.1.dmg · signed ad-hoc, not notarised" data-zh="WattLite-2.1.dmg · ad-hoc 签名，未公证">WattLite-2.1.dmg · signed ad-hoc, not notarised</p>
+              <div class="hash-row"><code>4b65f7b13576e0a772e335630dec6c6be3eb5caa121e2597ab5c837dbe0a56d6</code><button type="button" class="copy-btn" data-copy="4b65f7b13576e0a772e335630dec6c6be3eb5caa121e2597ab5c837dbe0a56d6" data-en="Copy" data-zh="复制">Copy</button></div>
+              <p class="hash-note" data-en="WattLite-2.2.dmg · signed ad-hoc, not notarised" data-zh="WattLite-2.2.dmg · ad-hoc 签名，未公证">WattLite-2.2.dmg · signed ad-hoc, not notarised</p>
+              <div class="hash-row"><code>fc71b77c2042497df2262efc21acd442ace741c8331d7a5f2f9a9ca10f8212a9</code><button type="button" class="copy-btn" data-copy="fc71b77c2042497df2262efc21acd442ace741c8331d7a5f2f9a9ca10f8212a9" data-en="Copy" data-zh="复制">Copy</button></div>
+              <p class="hash-note" data-en="WattLite-2.2.zip · the auto-update asset" data-zh="WattLite-2.2.zip · 自动更新使用的包">WattLite-2.2.zip · the auto-update asset</p>
             </details>
           </article>
 
           <article class="platform-card js-win reveal">
             <div class="platform-top">
               <span class="platform-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.1 10.3 4v7.4H3V5.1Zm0 13.8 7.3 1.1v-7.3H3v6.2Zm8.3 1.2L21 21.6V12.7h-9.7v7.4Zm0-16 9.7-1.5v8.8h-9.7V4.1Z" fill="currentColor"/></svg></span>
-              <span class="version preview">v0.1.1 · <span data-en="Preview" data-zh="预览版">Preview</span></span>
+              <span class="version stable">v1.0.0 · <span data-en="Stable" data-zh="稳定版">Stable</span></span>
               <span class="rec rec-card" data-en="For this device" data-zh="适配当前设备">For this device</span>
             </div>
             <h3>Windows</h3>
-            <p class="platform-desc" data-en="Native WPF. Standard installer or portable zip, taskbar badge, CPU + GPU cards, per-disk drive letters and write speeds, light and dark themes." data-zh="原生 WPF。标准安装程序或免安装版，任务栏徽标、CPU + GPU 卡片、逐盘盘符与写入速度、明暗主题。">Native WPF. Standard installer or portable zip, taskbar badge, CPU + GPU cards, per-disk drive letters and write speeds, light and dark themes.</p>
-            <p class="platform-meta" data-en="Windows 10/11 · x64 · NVIDIA / AMD / Intel GPU" data-zh="Windows 10/11 · x64 · NVIDIA / AMD / Intel 显卡">Windows 10/11 · x64 · NVIDIA / AMD / Intel GPU</p>
+            <p class="platform-desc" data-en="Native WPF. Standard installer or portable zip, taskbar badge, CPU + GPU cards, per-disk drive letters and write speeds, light and dark themes, signed auto-updates." data-zh="原生 WPF。标准安装程序或免安装版，任务栏徽标、CPU + GPU 卡片、逐盘盘符与写入速度、明暗主题，支持签名自动更新。">Native WPF. Standard installer or portable zip, taskbar badge, CPU + GPU cards, per-disk drive letters and write speeds, light and dark themes, signed auto-updates.</p>
+            <p class="platform-meta" data-en="Windows 10/11 · x64 · NVIDIA / AMD / Intel GPU · auto-update" data-zh="Windows 10/11 · x64 · NVIDIA / AMD / Intel 显卡 · 自动更新">Windows 10/11 · x64 · NVIDIA / AMD / Intel GPU · auto-update</p>
             <div class="card-actions">
-              <a class="btn btn-primary" href="https://github.com/GabrielZZZ/WattLite/releases/download/v0.1.1-windows/WattLite-0.1.1-windows-x64-setup.exe">
+              <a class="btn btn-primary" href="https://github.com/GabrielZZZ/WattLite/releases/download/v1.0.0-windows/WattLite-1.0.0-windows-x64-setup.exe">
                 <span data-en="Download .exe" data-zh="下载 .exe">Download .exe</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>
               </a>
               <div class="secondary-links">
-                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v0.1.1-windows/WattLite-0.1.1-windows-x64.zip" data-en="Portable .zip" data-zh="免安装 .zip">Portable .zip</a>
-                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v0.1.1-windows/WattLite-0.1.1-windows-x64-setup.exe.sha256" data-en="SHA-256 file" data-zh="SHA-256 文件">SHA-256 file</a>
-                <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows" data-en="Release notes" data-zh="发布说明">Release notes</a>
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v1.0.0-windows/WattLite-1.0.0-windows-x64.zip" data-en="Portable .zip" data-zh="免安装 .zip">Portable .zip</a>
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/download/v1.0.0-windows/WattLite-1.0.0-windows-x64-setup.exe.sha256" data-en="SHA-256 file" data-zh="SHA-256 文件">SHA-256 file</a>
+                <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v1.0.0-windows" data-en="Release notes" data-zh="发布说明">Release notes</a>
               </div>
             </div>
             <details class="checksum">
               <summary>SHA-256</summary>
-              <div class="hash-row"><code>1da165e3206b6953f17d88cda9c89562bff300a067d66ab7fec178b653d62706</code><button type="button" class="copy-btn" data-copy="1da165e3206b6953f17d88cda9c89562bff300a067d66ab7fec178b653d62706" data-en="Copy" data-zh="复制">Copy</button></div>
-              <p class="hash-note" data-en="WattLite-0.1.1-windows-x64-setup.exe · installer · unsigned" data-zh="WattLite-0.1.1-windows-x64-setup.exe · 安装包 · 未签名">WattLite-0.1.1-windows-x64-setup.exe · installer · unsigned</p>
-              <div class="hash-row"><code>bba8161ede5e1ac4ac2a38e2357b5185eea0fccfc267dba51aa96ac8344d7401</code><button type="button" class="copy-btn" data-copy="bba8161ede5e1ac4ac2a38e2357b5185eea0fccfc267dba51aa96ac8344d7401" data-en="Copy" data-zh="复制">Copy</button></div>
-              <p class="hash-note" data-en="WattLite-0.1.1-windows-x64.zip · portable · self-contained" data-zh="WattLite-0.1.1-windows-x64.zip · 免安装 · 自包含">WattLite-0.1.1-windows-x64.zip · portable · self-contained</p>
+              <div class="hash-row"><code>970089d8ed6b2c22cf7eb8bc0550cbdc938df5ef77a003c85346e25b1ed3b600</code><button type="button" class="copy-btn" data-copy="970089d8ed6b2c22cf7eb8bc0550cbdc938df5ef77a003c85346e25b1ed3b600" data-en="Copy" data-zh="复制">Copy</button></div>
+              <p class="hash-note" data-en="WattLite-1.0.0-windows-x64-setup.exe · installer · unsigned" data-zh="WattLite-1.0.0-windows-x64-setup.exe · 安装包 · 未签名">WattLite-1.0.0-windows-x64-setup.exe · installer · unsigned</p>
+              <div class="hash-row"><code>b8518efb3cc43d46d09265ef58a3823ac8d6f8549eb8b2d663690200002d8026</code><button type="button" class="copy-btn" data-copy="b8518efb3cc43d46d09265ef58a3823ac8d6f8549eb8b2d663690200002d8026" data-en="Copy" data-zh="复制">Copy</button></div>
+              <p class="hash-note" data-en="WattLite-1.0.0-windows-x64.zip · portable · self-contained" data-zh="WattLite-1.0.0-windows-x64.zip · 免安装 · 自包含">WattLite-1.0.0-windows-x64.zip · portable · self-contained</p>
             </details>
           </article>
         </div>
 
+        <p class="download-foot" data-en="Both apps check for updates in the background from a signed feed; automatic checks can be disabled. Existing macOS 2.1 and Windows 0.1.1 users install this version once by hand. The Windows portable build notifies but never replaces itself." data-zh="两个应用都会从签名更新源后台检查更新，自动检查可关闭。macOS 2.1 与 Windows 0.1.1 的用户需要手动安装一次本版本。Windows 免安装版只提示，不会替换自身。">Both apps check for updates in the background from a signed feed; automatic checks can be disabled. Existing macOS 2.1 and Windows 0.1.1 users install this version once by hand. The Windows portable build notifies but never replaces itself.</p>
         <p class="download-foot" data-en="Windows Setup installs to Program Files and requests administrator rights; the app needs them for hardware sensors too. SmartScreen may warn because neither the installer nor the app is code-signed. GPU power and temperature come from NVIDIA, AMD and Intel drivers when they expose sensors; a virtual machine's virtual GPU exposes none, so power readings stay blank there. macOS builds are ad-hoc signed; first launch needs a one-time Gatekeeper approval." data-zh="Windows 安装版会安装到 Program Files 并请求管理员权限（应用读取硬件传感器也需要）。安装包和主程序均未签名，SmartScreen 可能提示。GPU 功率与温度来自 NVIDIA、AMD、Intel 驱动暴露的传感器；虚拟机的虚拟显卡不提供这些传感器，因此虚拟机内不会显示功率。macOS 版为 ad-hoc 签名，首次打开需在「隐私与安全性」放行一次。">Windows Setup installs to Program Files and requests administrator rights; the app needs them for hardware sensors too. SmartScreen may warn because neither the installer nor the app is code-signed. GPU power and temperature come from NVIDIA, AMD and Intel drivers when they expose sensors; a virtual machine's virtual GPU exposes none, so power readings stay blank there. macOS builds are ad-hoc signed; first launch needs a one-time Gatekeeper approval.</p>
         <p class="download-foot"><a href="https://github.com/GabrielZZZ/WattLite/releases" data-en="All releases and source code on GitHub →" data-zh="所有版本与源码在 GitHub →">All releases and source code on GitHub →</a></p>
       </div>

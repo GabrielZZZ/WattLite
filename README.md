@@ -7,11 +7,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.1"><img alt="macOS release" src="https://img.shields.io/badge/macOS-v2.1-blue"></a>
-  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows"><img alt="Windows release" src="https://img.shields.io/badge/Windows-v0.1.1%20pre--release-orange"></a>
+  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.2"><img alt="macOS release" src="https://img.shields.io/badge/macOS-v2.2-blue"></a>
+  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v1.0.0-windows"><img alt="Windows release" src="https://img.shields.io/badge/Windows-v1.0.0-blue"></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
   <img alt="platform" src="https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20Windows%2010%2F11-blue">
-  <img alt="network" src="https://img.shields.io/badge/network-none-orange">
+  <img alt="network" src="https://img.shields.io/badge/network-update%20checks%20only-orange">
   <a href="https://gabrielzzz.github.io/WattLite/"><img alt="website" src="https://img.shields.io/badge/website-live-3ad6cb"></a>
 </p>
 
@@ -25,7 +25,7 @@
 </p>
 <p align="center"><sub>macOS menu bar panel · Windows taskbar panel</sub></p>
 
-WattLite is a native power monitor for both platforms. It shows the power the machine is actually drawing, keeps a short trend, and breaks the number down by component — without controlling hardware, reading serial numbers, or making a single network request.
+WattLite is a native power monitor for both platforms. It shows the power the machine is actually drawing, keeps a short trend, and breaks the number down by component — without controlling hardware, reading serial numbers, or collecting telemetry. The only network calls are optional signed update checks, and they can be switched off.
 
 - **macOS** reads SMC input power and battery net power straight from the I/O Kit.
 - **Windows** combines CPU package power and GPU power from LibreHardwareMonitor (NVIDIA, AMD and Intel), using `nvidia-smi` for NVIDIA's power limit and VRAM. The main number is marked `≈` because it is the sum of the main components, not wall power.
@@ -34,14 +34,21 @@ WattLite is a native power monitor for both platforms. It shows the power the ma
 
 | | macOS | Windows |
 | --- | --- | --- |
-| Status | v2.1, stable | v0.1.1, pre-release |
+| Status | v2.2, stable | v1.0.0, stable |
 | Lives in | Menu bar (`LSUIElement`, no Dock icon) | Taskbar badge next to the tray |
 | Main number | SMC input power / battery net power | CPU package + GPU power (`≈`) |
 | Cards | Adapter, Mac model, battery, session energy | CPU, GPU, memory, one card per physical disk |
 | Extras | Adapter artwork, Mac model artwork, battery view | Drive letters, per-disk write speed, light/dark switch |
+| Updates | Signed auto-update | Signed auto-update (portable build notifies only) |
 | Requirements | Apple Silicon, macOS 14+ | Windows 10 1809+/11 x64, administrator; NVIDIA / AMD / Intel driver for GPU sensors |
-| Download | `WattLite-2.1.dmg` | `WattLite-0.1.1-windows-x64-setup.exe` (installer) or the portable `.zip` |
+| Download | `WattLite-2.2.dmg` | `WattLite-1.0.0-windows-x64-setup.exe` (installer) or the portable `.zip` |
 | Source | [`Sources/`](Sources) | [`windows/`](windows) |
+
+## Updates
+
+Both builds check for updates 20 seconds after launch and every six hours afterwards. The update manifest is signed with ECDSA P-256; the download is checked against SHA-256 before it is allowed to replace anything. macOS runs a small helper that swaps the `.app` bundle and relaunches; Windows runs the installer silently and restarts the app. Automatic checks can be disabled in Settings, and manual checks remain available. The Windows portable build never replaces itself — it only tells you a new version is available.
+
+This is the first release with auto-update. If you are on macOS 2.1 or Windows 0.1.1, install 2.2 / 1.0.0 once by hand; later versions can update in place.
 
 ## macOS
 
@@ -94,6 +101,7 @@ Unplugged, the same panel switches to the battery view: the trend becomes discre
 | Menu bar metric | Mac input power / battery net power |
 | Background sampling | 1 / 2 / 5 seconds |
 | Launch at login | on / off |
+| Software updates | automatic checks on / off, manual check, restart-and-update |
 
 While the panel is open it samples once per second regardless; sampling stops on sleep and restarts on wake.
 
@@ -101,16 +109,18 @@ While the panel is open it samples once per second regardless; sampling stops on
 
 #### Download (recommended)
 
-Grab `WattLite-2.1.dmg` from [**Releases**](https://github.com/GabrielZZZ/WattLite/releases/latest) and drag WattLite into `Applications`.
+Grab `WattLite-2.2.dmg` from the [**macOS release**](https://github.com/GabrielZZZ/WattLite/releases/tag/v2.2) and drag WattLite into `Applications`.
 
 The first launch needs one manual approval: this project has no Apple Developer account, so the build is ad-hoc signed and not notarised, and Gatekeeper blocks every copy that arrives through a browser. Either
 
 - open **System Settings → Privacy & Security** and click **Open Anyway** next to "WattLite was blocked", or
 - clear the quarantine flag with `xattr -dr com.apple.quarantine /Applications/WattLite.app`
 
-`WattLite-2.1.zip` works too, but **extract it by double-clicking or with `ditto -x -k`** — `unzip` leaves `._*` resource forks inside the bundle and breaks the signature seal.
+`WattLite-2.2.zip` works too, but **extract it by double-clicking or with `ditto -x -k`** — `unzip` leaves `._*` resource forks inside the bundle and breaks the signature seal.
 
 After that the menu bar shows `⚡ 67W · In 10.2 W`. Click it for the panel, and turn on **Launch at login** if you want it permanent.
+
+Once 2.2 is installed, future releases download inside the app. The settings page shows the version, automatic-check switch, manual check and a **Restart and update** button. Updates replace only `/Applications/WattLite.app`; settings and history stay in `~/Library/Application Support/WattLite`. If the app is running from a mounted DMG, App Translocation, or another read-only location, WattLite skips the automatic download and offers the download page instead.
 
 #### Build from source
 
@@ -181,11 +191,14 @@ The Windows build is a native WPF app. It places a transparent, always-on-top ba
 - **Power panel** with a big number, a 10-minute trend, CPU / GPU / memory cards and one card per physical disk — each with its vendor logo, model, capacity, drive letters (`C:`, `D: E:`, …) and its own write speed.
 - **Manual light/dark appearance** in Settings, applied instantly to the whole panel and persisted.
 - **Chinese / English UI**, also switchable without a restart.
-- **Local-only history**: per-minute CSV, no network requests, no telemetry.
+- **Signed auto-update**: checks quietly in the background, verifies the manifest signature and the installer's SHA-256, then installs silently and restarts. Portable copies only show a download notice.
+- **Local-only history**: per-minute CSV. Update checks are the only network traffic, they can be disabled, and there is no telemetry.
 
 ### Install
 
-Download `WattLite-0.1.1-windows-x64-setup.exe` from the [Windows release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows) and run it. Setup installs to `C:\Program Files\WattLite`, adds a Start Menu shortcut (and an optional desktop shortcut) and an entry under Apps & Features. A portable `WattLite-0.1.1-windows-x64.zip` is available on the same release; extract it and run `WattLite.exe` without installing.
+Download `WattLite-1.0.0-windows-x64-setup.exe` from the [Windows release](https://github.com/GabrielZZZ/WattLite/releases/tag/v1.0.0-windows) and run it. Setup installs to `C:\Program Files\WattLite`, adds a Start Menu shortcut (and an optional desktop shortcut) and an entry under Apps & Features. A portable `WattLite-1.0.0-windows-x64.zip` is available on the same release; extract it and run `WattLite.exe` without installing.
+
+After 1.0.0 is installed, updates download in the background and install with the standard Inno Setup flow, then the app restarts. The installed build inherits the app's administrator token, so applying an update does not raise a second UAC prompt. The portable build does not self-replace; it shows the new version and links to the download page.
 
 - Windows 10 1809+ or Windows 11, x64. Both builds are self-contained, so no .NET install is needed.
 - **Administrator rights are required**: setup writes to Program Files, and the app itself needs elevation because CPU package power goes through LibreHardwareMonitor/PawnIO and disk counters use `IOCTL_DISK_PERFORMANCE`. Accept the UAC prompt.
@@ -202,7 +215,7 @@ dotnet run --project windows/Checks/Checks.csproj   # nvidia-smi parser smoke te
 dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=false -p:DebugType=None -o publish
 
-.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.1
+.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 1.0.0
 ```
 
 Requires the .NET 8 SDK and Inno Setup 6 on the build machine. The installer script lives in [`windows/installer/`](windows/installer); the zip is the published folder plus `README.txt` and `LICENSE`. See [`windows/README.md`](windows/README.md) for details.
@@ -218,7 +231,7 @@ Settings live next to it in `%APPDATA%\WattLite\settings.json`. Delete the folde
 
 ## Privacy & data
 
-Neither version makes network requests, collects telemetry, requires an account, or reads serial numbers. Settings and history never leave the machine: macOS keeps them under `~/Library/Application Support/WattLite`, Windows under `%APPDATA%\WattLite`. Delete those folders to erase everything.
+Neither version collects telemetry, requires an account, or reads serial numbers. Settings and history never leave the machine: macOS keeps them under `~/Library/Application Support/WattLite`, Windows under `%APPDATA%\WattLite`. The only network calls are update checks against GitHub Pages / jsDelivr and downloads from GitHub Releases or the ghfast.top mirror; they carry no personal data, and automatic checks can be switched off. Delete those folders to erase local data.
 
 ## Known limitations
 
@@ -235,9 +248,27 @@ Neither version makes network requests, collects telemetry, requires an account,
 - GPU power and temperature are available on **NVIDIA, AMD and Intel** GPUs when the driver exposes sensors; NVIDIA's power limit and VRAM use `nvidia-smi`. A virtual machine's virtual GPU has no power sensor, so a Windows VM cannot read the Mac's real GPU/CPU power.
 - The app requires **administrator rights**, and the binary is unsigned, so SmartScreen may warn on first launch.
 - Drive letters come from WMI partition associations; unusual storage layouts (Storage Spaces, dynamic disks) may not map every volume.
-- The Windows port is at **0.1.1** and marked as a pre-release while it gets real-world mileage.
+- The **portable build does not self-replace**. It checks for updates, then points to the download page; only the installed build applies updates automatically.
+- The installed build updates silently through Inno Setup and restarts itself. Existing 0.1.1 users must install 1.0.0 manually once.
 
 ## Release notes
+
+**Windows v1.0.0** — signed automatic updates.
+
+- Background update checks 20 seconds after launch, then every six hours; automatic checks can be disabled and manual checks remain
+- ECDSA P-256 signed manifest, SHA-256 verification (re-checked immediately before applying), silent installer and automatic restart
+- The installer gained an update mode (`/UPDATE=1`) that restarts the app; the app inherits administrator rights, so no second UAC prompt
+- Portable builds only notify and link to the download page
+- Includes the 0.1.1 AMD / Intel GPU support and launch/installer fixes
+- Existing 0.1.1 users install 1.0.0 manually once; later versions update in place
+
+**macOS v2.2** — signed automatic updates.
+
+- Background update checks 20 seconds after launch, then every six hours, with an on/off switch and manual check
+- CryptoKit P-256 signature verification and streaming SHA-256 check; a helper waits for the app to quit, verifies the downloaded bundle and code signature, backs up and replaces `.app`, relaunches, and rolls back on failure
+- Read-only locations (DMG, App Translocation) fall back to a manual download page; update results are reported on the next launch
+- Bilingual update settings and status, progress, restart-and-update and retry states
+- Existing 2.1 users install 2.2 manually once; later versions update in place
 
 **Windows v0.1.1** — AMD / Intel GPU support and launch fixes (pre-release).
 
