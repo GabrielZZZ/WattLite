@@ -142,23 +142,71 @@
     <section class="section" id="screens">
       <div class="shell">
         <div class="section-head reveal">
-          <p class="kicker" data-en="Windows taskbar" data-zh="Windows 任务栏">Windows taskbar</p>
+          <p class="kicker" data-en="Menu bar &amp; taskbar" data-zh="菜单栏与任务栏">Menu bar &amp; taskbar</p>
           <h2 data-en="Always there.<br>Never in the way." data-zh="一直在，<br>却不打扰。">Always there.<br>Never in the way.</h2>
-          <p class="section-sub" data-en="The badge sits left of the tray, stays transparent, and hides itself when a fullscreen app takes over. Click it for the full panel." data-zh="徽标停在托盘左侧，逐像素透明；全屏应用接管时自动隐藏。点它展开完整面板。">The badge sits left of the tray, stays transparent, and hides itself when a fullscreen app takes over. Click it for the full panel.</p>
+          <p class="section-sub" data-en="On macOS it lives in the menu bar. On Windows it sits beside the tray. Same glanceable number, no extra window." data-zh="macOS 在菜单栏，Windows 在托盘旁。同一个一眼可读的数字，不额外占窗口。">On macOS it lives in the menu bar. On Windows it sits beside the tray. Same glanceable number, no extra window.</p>
         </div>
 
-        <div class="taskbar-card reveal">
-          <div class="taskbar-copy">
-            <ul class="ticks">
-              <li data-en="CPU + GPU live watts" data-zh="CPU + GPU 实时功率">CPU + GPU live watts</li>
-              <li data-en="Follows taskbar light / dark" data-zh="跟随任务栏明暗">Follows taskbar light / dark</li>
-              <li data-en="Hides for fullscreen apps" data-zh="全屏应用自动隐藏">Hides for fullscreen apps</li>
-              <li data-en="One click for the full panel" data-zh="一键展开完整面板">One click for the full panel</li>
-            </ul>
-          </div>
-          <div class="taskbar-visual">
-            <img src="screenshots/windows/taskbar.png" data-en-alt="WattLite taskbar badge on Windows 11" data-zh-alt="Windows 11 任务栏上的 WattLite 徽标" alt="WattLite taskbar badge on Windows 11" width="916" height="82" decoding="async">
-          </div>
+        <div class="chrome-stack">
+          <article class="taskbar-card menubar-card reveal">
+            <div class="chrome-copy">
+              <span class="chrome-label">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="currentColor"/></svg>
+                <span data-en="macOS menu bar" data-zh="macOS 菜单栏">macOS menu bar</span>
+              </span>
+              <h3 data-en="One fixed-width number." data-zh="固定宽度，不左右跳动。">One fixed-width number.</h3>
+              <p data-en="Monospaced digits hold their place while the reading jumps, and the bolt carries a live energy-flow animation. Cached values are marked ≈, never passed off as real time." data-zh="等宽数字不会因为跳数挤动菜单栏，闪电图标带能量流动画；缓存值加 ≈，不冒充实时。">Monospaced digits hold their place while the reading jumps, and the bolt carries a live energy-flow animation. Cached values are marked ≈, never passed off as real time.</p>
+              <ul class="ticks">
+                <li data-en="Charge up / discharge down" data-zh="充电上行 / 放电下行">Charge up / discharge down</li>
+                <li data-en="≈ marks cached values" data-zh="缓存值加 ≈">≈ marks cached values</li>
+                <li data-en="Click for the full panel" data-zh="点击展开完整面板">Click for the full panel</li>
+              </ul>
+            </div>
+            <div class="menubar-visual" aria-hidden="true">
+              <div class="menubar-screen">
+                <div class="menubar-bar">
+                  <div class="menubar-left">
+                    <svg class="apple-logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="currentColor"/></svg>
+                    <span class="menubar-app">WattLite</span>
+                    <span class="menubar-menu" data-en="File" data-zh="文件">File</span>
+                    <span class="menubar-menu" data-en="View" data-zh="显示">View</span>
+                    <span class="menubar-menu" data-en="Window" data-zh="窗口">Window</span>
+                  </div>
+                  <div class="menubar-right">
+                    <span class="menubar-live">
+                      <img class="menubar-item" src="screenshots/menubar-en.png" data-en-src="screenshots/menubar-en.png" data-zh-src="screenshots/menubar.png" data-en-alt="WattLite in the macOS menu bar" data-zh-alt="macOS 菜单栏中的 WattLite" alt="WattLite in the macOS menu bar" width="300" height="56" decoding="async">
+                    </span>
+                    <span class="menubar-status" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 8.5a16 16 0 0 1 19 0"/><path d="M5.5 12a11.5 11.5 0 0 1 13 0"/><path d="M8.8 15.4a6.6 6.6 0 0 1 6.4 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+                      <svg class="battery" viewBox="0 0 28 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="23" height="12" rx="3.2"/><rect x="3.4" y="3.4" width="14" height="7.2" rx="1.6" fill="currentColor" stroke="none"/><path d="M26 5.2v3.6"/></svg>
+                    </span>
+                    <span class="menubar-clock">Tue 10:24</span>
+                  </div>
+                </div>
+                <div class="menubar-desktop"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="taskbar-card reveal">
+            <div class="chrome-copy">
+              <span class="chrome-label">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.1 10.3 4v7.4H3V5.1Zm0 13.8 7.3 1.1v-7.3H3v6.2Zm8.3 1.2L21 21.6V12.7h-9.7v7.4Zm0-16 9.7-1.5v8.8h-9.7V4.1Z" fill="currentColor"/></svg>
+                <span data-en="Windows taskbar" data-zh="Windows 任务栏">Windows taskbar</span>
+              </span>
+              <h3 data-en="A badge beside the tray." data-zh="托盘旁的实时徽标。">A badge beside the tray.</h3>
+              <p data-en="Per-pixel transparent, pinned left of the tray, and it steps aside when a fullscreen app takes over." data-zh="逐像素透明，固定在托盘左侧；全屏应用接管时自动让位。">Per-pixel transparent, pinned left of the tray, and it steps aside when a fullscreen app takes over.</p>
+              <ul class="ticks">
+                <li data-en="CPU + GPU live watts" data-zh="CPU + GPU 实时功率">CPU + GPU live watts</li>
+                <li data-en="Follows taskbar light / dark" data-zh="跟随任务栏明暗">Follows taskbar light / dark</li>
+                <li data-en="Hides for fullscreen apps" data-zh="全屏应用自动隐藏">Hides for fullscreen apps</li>
+                <li data-en="One click for the full panel" data-zh="一键展开完整面板">One click for the full panel</li>
+              </ul>
+            </div>
+            <div class="taskbar-visual">
+              <img src="screenshots/windows/taskbar.png" data-en-alt="WattLite taskbar badge on Windows 11" data-zh-alt="Windows 11 任务栏上的 WattLite 徽标" alt="WattLite taskbar badge on Windows 11" width="916" height="82" decoding="async">
+            </div>
+          </article>
         </div>
       </div>
     </section>
