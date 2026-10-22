@@ -114,7 +114,7 @@ enum Strings {
         "🚗 ≈ %.1f 公里电动车": "🚗 ≈ %.1f km by EV",
         // 面板
         "电量 %d%%": "Battery %d%%",
-        "本地运行 · 无网络请求": "Runs locally · No network requests",
+        "本地运行 · 更新检查可关": "Runs locally · Update checks can be turned off",
         "返回功率面板": "Back to power panel",
         "设置": "Settings",
         "退出 WattLite": "Quit WattLite",
@@ -151,6 +151,35 @@ enum Strings {
         "只读电源数据，不控制充电；历史按分钟聚合存本地 CSV，可随时删除。":
             "Reads power data only and never controls charging. History is aggregated per minute into local CSV "
             + "and can be deleted at any time.",
+        // 软件更新
+        "软件更新": "Software updates",
+        "自动检查更新": "Check for updates automatically",
+        "检查更新": "Check for updates",
+        "重启并更新": "Relaunch and update",
+        "打开下载页": "Open download page",
+        "启动 20 秒后检查，之后每 6 小时一次；关闭后不联网。":
+            "Checks 20 seconds after launch, then every 6 hours. No update network traffic when off.",
+        "正在检查更新…": "Checking for updates…",
+        "已是最新版本 %@。": "You're up to date (%@).",
+        "正在下载 %@…": "Downloading %@…",
+        "正在下载 %@… %d%%": "Downloading %@… %d%%",
+        "%@ 已下载，重启后完成更新。": "%@ downloaded. Relaunch to finish.",
+        "检查更新失败，请稍后再试。": "Couldn't check for updates. Try again later.",
+        "下载更新失败，请稍后再试。": "Couldn't download the update. Try again later.",
+        "更新包校验失败，已丢弃。": "The update package failed verification and was discarded.",
+        "无法启动更新，请手动下载安装。": "Couldn't start the update. Download and install manually.",
+        "需要 macOS %@ 或更高版本。": "Requires macOS %@ or later.",
+        "当前位置不支持自动更新，请下载后手动安装。":
+            "Automatic updates aren't available from this location. Download and install manually.",
+        "正在准备重启…": "Preparing to relaunch…",
+        "已更新到 %@。": "Updated to %@.",
+        "新版本": "the new version",
+        "上次更新失败（%@），已恢复旧版本。": "Last update failed (%@); the previous version was restored.",
+        "更新包无效": "invalid package",
+        "没有写入权限": "no write permission",
+        "新版本无法启动": "the new version wouldn't launch",
+        "旧版本未能及时退出": "the old version didn't quit in time",
+        "未知原因": "unknown reason",
         // 适配器编辑
         "适配器资料": "Adapter profile",
         "选择图片…": "Choose image…",

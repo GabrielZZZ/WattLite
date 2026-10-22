@@ -40,6 +40,7 @@ private enum AdapterImages {
 
 struct PanelView: View {
     @ObservedObject var store: PowerStore
+    @ObservedObject var updates: UpdateStore
     @ObservedObject private var library = AdapterLibrary.shared
     @ObservedObject private var l10n = L10n.shared
     @State private var settings = false
@@ -82,7 +83,7 @@ struct PanelView: View {
             }
             Divider()
             HStack {
-                Text(settings ? T("本地运行 · 无网络请求") : sourceCaption)
+                Text(settings ? T("本地运行 · 更新检查可关") : sourceCaption)
                     .font(.system(size: 10)).foregroundStyle(.secondary)
                 Spacer()
                 Button { settings.toggle() } label: {
@@ -400,10 +401,73 @@ struct PanelView: View {
                     Button(T("打开登录项设置")) { SMAppService.openSystemSettingsLoginItems() }
                 }
             }
+            VStack(alignment: .leading, spacing: 10) {
+                Text(T("软件更新")).font(.headline)
+                Toggle(T("自动检查更新"), isOn: Binding(
+                    get: { updates.autoCheck },
+                    set: { updates.setAutoCheck($0) }))
+                    .toggleStyle(.switch)
+                HStack(spacing: 10) {
+                    Button(T("检查更新")) { updates.checkNow() }
+                        .disabled(updates.phase == .checking || updates.phase == .downloading
+                                  || updates.phase == .applying)
+                    if updates.phase == .ready {
+                        Button(T("重启并更新")) { updates.apply() }
+                    } else if updates.phase == .manual {
+                        Button(T("打开下载页")) { updates.openDownloadPage() }
+                    }
+                    Spacer()
+                }
+                if updates.phase == .downloading {
+                    ProgressView(value: updates.progress).progressViewStyle(.linear)
+                }
+                if let status = updateStatusText {
+                    Text(status).font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if let notes = updates.notes {
+                    Text(notes).font(.caption).foregroundStyle(.secondary)
+                        .lineLimit(4).fixedSize(horizontal: false, vertical: true)
+                }
+                if let result = updates.installResultText {
+                    Text(result).font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Text(T("启动 20 秒后检查，之后每 6 小时一次；关闭后不联网。"))
+                    .font(.caption).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             // 版本读 Info.plist，免得发版时忘记同步这里
             Text("WattLite \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")\n"
                  + T("只读电源数据，不控制充电；历史按分钟聚合存本地 CSV，可随时删除。"))
                 .font(.caption).foregroundStyle(.secondary).lineSpacing(5)
+        }
+    }
+
+    private var updateStatusText: String? {
+        switch updates.phase {
+        case .idle:
+            return nil
+        case .checking:
+            return T("正在检查更新…")
+        case .upToDate:
+            return TF("已是最新版本 %@。", updates.currentVersion)
+        case .downloading:
+            if updates.progress > 0 {
+                return TF("正在下载 %@… %d%%", updates.availableVersion ?? "",
+                          Int((updates.progress * 100).rounded()))
+            }
+            return TF("正在下载 %@…", updates.availableVersion ?? "")
+        case .ready:
+            return TF("%@ 已下载，重启后完成更新。", updates.availableVersion ?? "")
+        case .failed:
+            return T(updates.error ?? "检查更新失败，请稍后再试。")
+        case .unsupported:
+            return TF("需要 macOS %@ 或更高版本。", updates.minOS ?? "")
+        case .manual:
+            return T("当前位置不支持自动更新，请下载后手动安装。")
+        case .applying:
+            return T("正在准备重启…")
         }
     }
 }

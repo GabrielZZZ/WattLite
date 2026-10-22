@@ -15,6 +15,7 @@ struct WattLiteMain {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var store: PowerStore!
+    private var updates: UpdateStore!
     private var statusItem: NSStatusItem!
     private let popover = NSPopover()
     private var inspectionWindow: NSWindow?
@@ -23,6 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         store = PowerStore()
+        updates = UpdateStore()
         // ponytail: system_profiler 首次调用较慢，后台预热避免断电时面板卡顿
         DispatchQueue.global(qos: .utility).async { _ = MachineInfo.shared }
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -35,6 +37,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             button.image?.isTemplate = true
             statusBolt = button.image
         }
+        let wc = NSWorkspace.shared.notificationCenter
+        for (name, paused) in [(NSWorkspace.screensDidSleepNotification, true),
+                               (NSWorkspace.sessionDidResignActiveNotification, true),
+                               (NSWorkspace.screensDidWakeNotification, false),
+                               (NSWorkspace.sessionDidBecomeActiveNotification, false)] {
+            wc.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.uiPaused = paused }
+            }
+        }
         popover.behavior = .transient
         popover.animates = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         popover.delegate = self
@@ -42,9 +53,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         popover.contentSize = NSSize(width: 380, height: 724)
         store.onReading = { [weak self] value in self?.updateStatus(value) }
         updateStatus(store.latest)
+        updates.start()
         if CommandLine.arguments.contains("--inspect") {
             store.setVisible(true)
-            let controller = NSHostingController(rootView: PanelView(store: store))
+            let controller = NSHostingController(rootView: PanelView(store: store, updates: updates))
             let window = NSWindow(contentViewController: controller)
             window.title = "WattLite"
             window.styleMask = [.titled, .closable]
@@ -94,6 +106,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var animationMode = ""
     private var chargeAnimator: Timer?
     private var boltFrames: [NSImage] = []
+    // ponytail: 锁屏/显示器睡眠/会话切走时没人看菜单栏，换帧却照烧全量 CPU；暂停时跳帧，可见时零成本
+    private var uiPaused = false
 
     private func updateBoltAnimation(_ reading: PowerReading, on button: NSStatusBarButton) {
         guard let base = statusBolt else { return }
@@ -118,6 +132,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         chargeAnimator = Timer.scheduledTimer(withTimeInterval: 1.0 / fps, repeats: true) { [weak self, weak button] timer in
             MainActor.assumeIsolated {
                 guard let button, let self, !self.boltFrames.isEmpty else { timer.invalidate(); return }
+                guard !self.uiPaused else { return }
                 button.image = self.boltFrames[index % self.boltFrames.count]
                 index += 1
             }
@@ -158,7 +173,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private func showPanel() {
         guard let button = statusItem.button else { return }
         store.setVisible(true)
-        popover.contentViewController = NSHostingController(rootView: PanelView(store: store))
+        popover.contentViewController = NSHostingController(rootView: PanelView(store: store, updates: updates))
         NSApp.activate(ignoringOtherApps: true)
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         let window = popover.contentViewController?.view.window
@@ -178,5 +193,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         return true
     }
 
-    func applicationWillTerminate(_ notification: Notification) { store.stop() }
+    func applicationWillTerminate(_ notification: Notification) {
+        updates.stop()
+        store.stop()
+    }
 }
