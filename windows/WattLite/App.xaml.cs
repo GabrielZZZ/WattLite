@@ -6,6 +6,7 @@ namespace WattLite;
 public partial class App : System.Windows.Application
 {
     private PowerStore? _store;
+    private UpdateService? _updates;
     private TrayIcon? _tray;
     private TaskbarBadge? _badge;
     private PanelWindow? _panel;
@@ -48,7 +49,8 @@ public partial class App : System.Windows.Application
             Settings.Load();
             Theme.Apply(Settings.Current.Theme);
             _store = new PowerStore();
-            _panel = new PanelWindow(_store);
+            _updates = new UpdateService();
+            _panel = new PanelWindow(_store, _updates);
             var badge = new TaskbarBadge
             {
                 TogglePanel = () => _panel.Toggle(),
@@ -62,6 +64,18 @@ public partial class App : System.Windows.Application
                 OpenSettings = () => _panel.ShowSettings(),
             };
             _tray = tray;
+            string? balloonedVersion = null;
+            _updates.StateChanged += () =>
+            {
+                var state = _updates.State;
+                if (state.Phase is UpdatePhase.Ready or UpdatePhase.Portable &&
+                    state.Version is { Length: > 0 } version &&
+                    version != balloonedVersion)
+                {
+                    balloonedVersion = version;
+                    tray.ShowUpdateAvailable(version, state.Phase == UpdatePhase.Ready);
+                }
+            };
             _store.OnReading += reading =>
             {
                 badge.UpdateStatus(reading);
@@ -72,6 +86,7 @@ public partial class App : System.Windows.Application
             Log($"WINDOW badge={badge.Attached} tray=true");
             _panel.ShowPanel(startup: true);
             _store.Start();
+            _updates.Start();
             Log("READY");
         }
         catch (Exception ex)
@@ -88,6 +103,7 @@ public partial class App : System.Windows.Application
     {
         _badge?.Dispose();
         _tray?.Dispose();
+        _updates?.Dispose();
         _store?.Dispose();
         base.OnExit(e);
     }

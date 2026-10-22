@@ -2,7 +2,7 @@
 
 原生 Windows 10/11 实现（WPF）。与 macOS 版一样，只回答一个问题：这台机器此刻的主要部件吃进多少瓦。
 
-> 当前版本 **0.1.1**，下载见 [Windows Release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.1-windows)。推荐使用安装版 `WattLite-0.1.1-windows-x64-setup.exe`；同一页面也提供免安装 zip。
+> 当前版本 **1.0.0**，下载见 [Releases](https://github.com/GabrielZZZ/WattLite/releases)。推荐使用安装版 `WattLite-1.0.0-windows-x64-setup.exe`；同一页面也提供免安装 zip。
 
 ## 功能
 
@@ -11,7 +11,8 @@
 - **每块物理盘独立卡片**：显示盘符（如 `C:`、`D: E:`）与各自的实时写入速度。
 - **明暗主题**：设置里手动切换深色/浅色，立即生效并持久化。
 - **中英双语**：设置里即时切换。
-- **纯本地**：无网络请求；历史按分钟聚合写入 `%APPDATA%\WattLite` 下的 CSV，可随时删除。
+- **自动更新**：安装版默认在启动 20 秒后检查、之后每 6 小时检查一次；发现新版本会下载签名的安装包，校验 SHA-256 后静默安装并自动重启。设置里可关闭自动检查，也可手动检查。免安装版只提示新版本，不自替换。
+- **本地数据**：历史按分钟聚合写入 `%APPDATA%\WattLite` 下的 CSV，可随时删除；更新检查是唯一联网行为，不发送遥测或个人数据。
 
 ## 运行要求
 
@@ -23,8 +24,8 @@
 
 ## 安装
 
-- **安装版（推荐）**：`WattLite-0.1.1-windows-x64-setup.exe`。安装到 `C:\Program Files\WattLite`，创建开始菜单快捷方式和可选桌面快捷方式，写入「应用和功能」卸载项，支持中英安装界面。安装需要一次管理员权限。
-- **免安装版**：`WattLite-0.1.1-windows-x64.zip`，解压后运行 `WattLite.exe`。
+- **安装版（推荐）**：`WattLite-1.0.0-windows-x64-setup.exe`。安装到 `C:\Program Files\WattLite`，创建开始菜单快捷方式和可选桌面快捷方式，写入「应用和功能」卸载项，支持中英安装界面。安装需要一次管理员权限。后续版本可在应用内自动更新。
+- **免安装版**：`WattLite-1.0.0-windows-x64.zip`，解压后运行 `WattLite.exe`。免安装版不会自动替换自身，发现新版本时会提示手动下载。
 - 两者都自包含 .NET 运行时；主程序均需管理员权限。安装包与主程序目前未做代码签名。
 - 卸载保留 `%APPDATA%\WattLite` 下的设置与历史。
 
@@ -50,19 +51,22 @@ dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
 生成安装包（需要 Inno Setup 6；默认探测当前用户或全局安装目录，也可传 `-Iscc`）：
 
 ```powershell
-.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 0.1.1
+.\windows\installer\build-installer.ps1 -PublishDir .\publish -Version 1.0.0
 ```
 
-产物在 `dist\`：`WattLite-0.1.1-windows-x64-setup.exe` 与 `.sha256`。安装器支持中英双语，安装到 Program Files，包含开始菜单/可选桌面快捷方式与卸载项。
+产物在 `dist\`：`WattLite-1.0.0-windows-x64-setup.exe` 与 `.sha256`。安装器支持中英双语，安装到 Program Files，包含开始菜单/可选桌面快捷方式与卸载项。更新时应用以 `/SILENT /UPDATE=1` 启动安装器，安装完成后自动重启。
+
+更新源的清单格式、签名和发布顺序见 [UPDATE-FEED.md](UPDATE-FEED.md)。私钥不进入仓库；发布清单必须使用同一把私钥签名，应用内置对应公钥。
 
 ## 目录
 
 ```
 windows/
   WattLite/    WPF 主程序（任务栏徽标、面板、传感器、设置、主题）
-  Checks/      控制台冒烟测试（nvidia-smi 行解析边界）
+  Checks/      控制台冒烟测试（nvidia-smi 行解析、更新清单签名/解析）
   installer/   Inno Setup 脚本、中英文安装界面资源、构建脚本
   README-portable.txt  免安装 zip 内的说明
+  UPDATE-FEED.md       更新清单与签名格式（macOS 端可复用）
   WattLite.sln
 ```
 
@@ -73,4 +77,4 @@ windows/
 
 ---
 
-**English.** Native Windows 10/11 port built with WPF: a transparent taskbar badge with live CPU package + GPU power, a macOS-style panel, per-disk cards with drive letters and write speeds, light/dark themes, Chinese/English UI, and local-only CSV history. GPU sensors cover NVIDIA, AMD and Intel through LibreHardwareMonitor; NVIDIA's power limit and VRAM use `nvidia-smi`; virtual machines expose no virtual GPU power sensor. The release ships a standard Inno Setup installer (Program Files, Start Menu shortcut, uninstall entry) plus a portable zip; the app requires administrator rights. Build with `dotnet build windows/WattLite/WattLite.csproj -c Release`; create the installer with `windows\installer\build-installer.ps1`.
+**English.** Native Windows 10/11 port built with WPF: a transparent taskbar badge with live CPU package + GPU power, a macOS-style panel, per-disk cards with drive letters and write speeds, light/dark themes, Chinese/English UI, local CSV history, and automatic updates for the installed build. GPU sensors cover NVIDIA, AMD and Intel through LibreHardwareMonitor; NVIDIA's power limit and VRAM use `nvidia-smi`; virtual machines expose no virtual GPU power sensor. The installed build checks a signed feed 20 seconds after launch and every six hours, verifies SHA-256, installs silently and restarts; the portable build only prompts for a manual download. Update checks are the only network traffic, send no telemetry, and can be disabled in Settings. The release ships a standard Inno Setup installer plus a portable zip; the app requires administrator rights. Build with `dotnet build windows/WattLite/WattLite.csproj -c Release`; create the installer with `windows\installer\build-installer.ps1`.

@@ -30,6 +30,31 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Primary}"/>
+            <Setter Property="Background" Value="{DynamicResource AccentDim}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg" Background="{TemplateBinding Background}" CornerRadius="7"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource SegmentHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style x:Key="Segment" TargetType="RadioButton">
             <Setter Property="Foreground" Value="{DynamicResource Secondary}"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -173,20 +198,20 @@
                 <ScrollViewer x:Name="SettingsPane" VerticalScrollBarVisibility="Hidden" Visibility="Collapsed">
                     <StackPanel Margin="0,4,0,0">
                         <TextBlock x:Name="SettingsHeadline" FontSize="27" FontWeight="Medium" Foreground="{DynamicResource Primary}"
-                                   LineHeight="36" Margin="0,0,0,24"/>
+                                   LineHeight="36" TextWrapping="Wrap" Margin="0,0,0,24"/>
                         <TextBlock x:Name="AppearanceHeadline" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Primary}" Margin="0,0,0,10"/>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                             <RadioButton x:Name="ThemeDark" Style="{StaticResource Segment}" GroupName="theme" Click="OnThemeClick"/>
                             <RadioButton x:Name="ThemeLight" Style="{StaticResource Segment}" GroupName="theme" Click="OnThemeClick"/>
                         </StackPanel>
-                        <TextBlock x:Name="AppearanceNote" FontSize="10" Foreground="{DynamicResource Secondary}" Margin="0,0,0,24"/>
+                        <TextBlock x:Name="AppearanceNote" FontSize="10" Foreground="{DynamicResource Secondary}" TextWrapping="Wrap" Margin="0,0,0,24"/>
 
                         <TextBlock x:Name="LangHeadline" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Primary}" Margin="0,0,0,10"/>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                             <RadioButton x:Name="LangZh" Style="{StaticResource Segment}" GroupName="lang" Content="简体中文" Click="OnLangClick"/>
                             <RadioButton x:Name="LangEn" Style="{StaticResource Segment}" GroupName="lang" Content="English" Click="OnLangClick"/>
                         </StackPanel>
-                        <TextBlock x:Name="LangNote" FontSize="10" Foreground="{DynamicResource Secondary}" Margin="0,0,0,24"/>
+                        <TextBlock x:Name="LangNote" FontSize="10" Foreground="{DynamicResource Secondary}" TextWrapping="Wrap" Margin="0,0,0,24"/>
 
                         <TextBlock x:Name="IntervalHeadline" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Primary}" Margin="0,0,0,10"/>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
@@ -194,9 +219,20 @@
                             <RadioButton x:Name="Seg2" Style="{StaticResource Segment}" GroupName="interval" Click="OnIntervalClick"/>
                             <RadioButton x:Name="Seg5" Style="{StaticResource Segment}" GroupName="interval" Click="OnIntervalClick"/>
                         </StackPanel>
-                        <TextBlock x:Name="IntervalNote" FontSize="10" Foreground="{DynamicResource Secondary}" Margin="0,0,0,24"/>
+                        <TextBlock x:Name="IntervalNote" FontSize="10" Foreground="{DynamicResource Secondary}" TextWrapping="Wrap" Margin="0,0,0,24"/>
 
-                        <TextBlock x:Name="VersionNote" FontSize="10" Foreground="{DynamicResource Secondary}" LineHeight="16"/>
+                        <TextBlock x:Name="UpdateHeadline" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Primary}" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                            <RadioButton x:Name="UpdateAutoOn" Style="{StaticResource Segment}" GroupName="updates" Click="OnUpdateToggleClick"/>
+                            <RadioButton x:Name="UpdateAutoOff" Style="{StaticResource Segment}" GroupName="updates" Click="OnUpdateToggleClick"/>
+                        </StackPanel>
+                        <TextBlock x:Name="UpdateNote" FontSize="10" Foreground="{DynamicResource Secondary}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                        <Button x:Name="UpdateAction" Style="{StaticResource ActionButton}" HorizontalAlignment="Left"
+                                Margin="0,0,0,8" Click="OnUpdateActionClick"/>
+                        <TextBlock x:Name="UpdateStatus" FontSize="10" Foreground="{DynamicResource Secondary}" TextWrapping="Wrap"
+                                   LineHeight="15" Margin="0,0,0,24"/>
+
+                        <TextBlock x:Name="VersionNote" FontSize="10" Foreground="{DynamicResource Secondary}" TextWrapping="Wrap" LineHeight="16"/>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>

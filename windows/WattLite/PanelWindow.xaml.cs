@@ -16,6 +16,7 @@ namespace WattLite;
 public partial class PanelWindow : Window
 {
     private readonly PowerStore _store;
+    private readonly UpdateService _updates;
     private readonly DispatcherTimer _hideTimer;
     private readonly Stopwatch _clock = Stopwatch.StartNew();
     private readonly List<(double X, double Speed, double Radius, double Phase)> _particles = new();
@@ -25,15 +26,17 @@ public partial class PanelWindow : Window
     // 任务栏嵌入徽标的锚点（物理像素），用于把面板钉在徽标旁
     public Func<Rect?>? AnchorProvider;
 
-    public PanelWindow(PowerStore store)
+    public PanelWindow(PowerStore store, UpdateService updates)
     {
         InitializeComponent();
         _store = store;
+        _updates = updates;
         // 点击托盘图标时面板先失焦（Deactivated 先于 MouseClick 触发），
         // 延迟隐藏给托盘点击留出取消窗口，否则"点托盘关面板"会被立即重开
         _hideTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(200) };
         _hideTimer.Tick += (_, _) => { _hideTimer.Stop(); HidePanel(); };
         _store.OnReading += reading => Dispatcher.Invoke(() => UpdateView(reading));
+        _updates.StateChanged += () => Dispatcher.Invoke(RefreshUpdateView);
         Strings.LanguageChanged += () => Dispatcher.Invoke(() => UpdateView(_store.Latest));
         Theme.Changed += OnThemeChanged;
         GenerateParticles();
@@ -166,6 +169,90 @@ public partial class PanelWindow : Window
         ThemeLight.IsChecked = !Theme.IsDark;
         LangZh.IsChecked = Strings.Lang == "zh";
         LangEn.IsChecked = Strings.Lang == "en";
+        RefreshUpdateView();
+    }
+
+    private void RefreshUpdateView()
+    {
+        UpdateHeadline.Text = Strings.T("软件更新");
+        UpdateAutoOn.Content = Strings.T("开启");
+        UpdateAutoOff.Content = Strings.T("关闭");
+        UpdateAutoOn.IsChecked = Settings.Current.AutoUpdate;
+        UpdateAutoOff.IsChecked = !Settings.Current.AutoUpdate;
+        UpdateNote.Text = Strings.T("自动检查新版本；安装版会下载并在重启时安装。更新检查只访问 GitHub、jsDelivr 与下载镜像，不发送个人数据。");
+
+        var state = _updates.State;
+        UpdateAction.IsEnabled = true;
+        switch (state.Phase)
+        {
+            case UpdatePhase.Idle:
+                UpdateStatus.Text = Settings.Current.AutoUpdate
+                    ? Strings.T("自动检查已开启。")
+                    : Strings.T("自动检查已关闭。");
+                UpdateAction.Content = Strings.T("检查更新");
+                break;
+            case UpdatePhase.Checking:
+                UpdateStatus.Text = Strings.T("正在检查更新…");
+                UpdateAction.Content = Strings.T("检查更新");
+                UpdateAction.IsEnabled = false;
+                break;
+            case UpdatePhase.UpToDate:
+                UpdateStatus.Text = Strings.TF("已是最新版本 v{0}。",
+                    state.Version ?? UpdateService.CurrentVersionText);
+                UpdateAction.Content = Strings.T("检查更新");
+                break;
+            case UpdatePhase.Downloading:
+                UpdateStatus.Text = Strings.TF("正在下载 v{0}… {1}%",
+                    state.Version ?? "", (int)Math.Round(state.Progress * 100));
+                UpdateAction.Content = Strings.T("正在下载…");
+                UpdateAction.IsEnabled = false;
+                break;
+            case UpdatePhase.Ready:
+                UpdateStatus.Text = Strings.TF("v{0} 已下载，重启后完成更新。", state.Version ?? "");
+                UpdateAction.Content = Strings.T("重启并更新");
+                break;
+            case UpdatePhase.Failed:
+                UpdateStatus.Text = state.Error == "download"
+                    ? Strings.T("下载更新失败，请稍后重试。")
+                    : state.Error == "verify"
+                        ? Strings.T("更新包校验失败，请重新下载。")
+                        : state.Error == "apply"
+                            ? Strings.T("启动更新失败，请稍后重试。")
+                            : Strings.T("检查更新失败，请稍后重试。");
+                UpdateAction.Content = Strings.T("重试");
+                break;
+            case UpdatePhase.Portable:
+                UpdateStatus.Text = Strings.T("免安装版不支持自动更新，请手动下载新版本。");
+                UpdateAction.Content = Strings.T("打开下载页");
+                break;
+            case UpdatePhase.Applying:
+                UpdateStatus.Text = Strings.T("正在启动更新…");
+                UpdateAction.Content = Strings.T("正在更新…");
+                UpdateAction.IsEnabled = false;
+                break;
+        }
+    }
+
+    private void OnUpdateToggleClick(object sender, RoutedEventArgs e)
+    {
+        _updates.SetAutoUpdate(UpdateAutoOn.IsChecked == true);
+        RefreshUpdateView();
+    }
+
+    private void OnUpdateActionClick(object sender, RoutedEventArgs e)
+    {
+        switch (_updates.State.Phase)
+        {
+            case UpdatePhase.Ready:
+                _updates.Apply();
+                break;
+            case UpdatePhase.Portable:
+                _updates.OpenDownloadPage();
+                break;
+            default:
+                _ = _updates.CheckAsync(manual: true);
+                break;
+        }
     }
 
     private void OnThemeClick(object sender, RoutedEventArgs e) =>
@@ -533,7 +620,7 @@ public partial class PanelWindow : Window
 
     private void UpdateStaticTexts()
     {
-        FooterCaption.Text = Strings.T("本地运行 · 无网络请求");
+        FooterCaption.Text = Strings.T("本地运行 · 更新检查可关");
         TrendTitle.Text = Strings.T("功率趋势");
         TrendEmpty.Text = Strings.T("等待有效采样");
         TrendLeft.Text = Strings.T("10 分钟前");
@@ -546,7 +633,7 @@ public partial class PanelWindow : Window
         IntervalHeadline.Text = Strings.T("后台采样间隔");
         IntervalNote.Text = Strings.T("面板展开时每秒读取；睡眠时停止采集。");
         VersionNote.Text = Strings.TF("WattLite {0}\n只读功率数据，不控制任何硬件；历史按分钟聚合存本地 CSV，可随时删除。",
-            typeof(PanelWindow).Assembly.GetName().Version?.ToString(3) ?? "0.1.0");
+            typeof(PanelWindow).Assembly.GetName().Version?.ToString(3) ?? "1.0.0");
         InfoButton.ToolTip = Strings.T("功率数据说明");
     }
 

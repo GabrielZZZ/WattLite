@@ -10,7 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>WattLite</AssemblyName>
     <RootNamespace>WattLite</RootNamespace>
-    <Version>0.1.1</Version>
+    <Version>1.0.0</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <AssemblyTitle>WattLite</AssemblyTitle>
     <Product>WattLite</Product>
@@ -25,6 +25,7 @@
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
+    <InternalsVisibleTo Include="WattLite.Checks" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.7-pre768" />

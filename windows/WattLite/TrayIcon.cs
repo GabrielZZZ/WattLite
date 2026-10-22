@@ -36,7 +36,18 @@ public sealed class TrayIcon : IDisposable
             if (e.Button == WinForms.MouseButtons.Left)
                 TogglePanel?.Invoke();
         };
+        _icon.BalloonTipClicked += (_, _) => OpenSettings?.Invoke();
         Strings.LanguageChanged += () => UpdateStatus(_store.Latest);
+    }
+
+    public void ShowUpdateAvailable(string version, bool downloaded)
+    {
+        _icon.BalloonTipTitle = Strings.T(downloaded ? "更新已准备好" : "发现新版本");
+        _icon.BalloonTipText = downloaded
+            ? Strings.TF("v{0} 已下载，点击打开设置并重启更新。", version)
+            : Strings.TF("v{0} 可用，点击打开设置下载。", version);
+        _icon.BalloonTipIcon = WinForms.ToolTipIcon.Info;
+        _icon.ShowBalloonTip(10000);
     }
 
     public void UpdateStatus(PowerReading reading)

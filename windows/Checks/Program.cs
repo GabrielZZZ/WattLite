@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using WattLite;
 
 var failures = 0;
@@ -108,6 +110,37 @@ Check("缺失列解析为 null", parsedSparse is not null && parsedSparse.Value.
 
 Check("CSV 头部", PowerLog.Header == "ts,cpu_w,gpu_w,temperature");
 Check("CSV 非法行返回 null", PowerLog.ParseRow("not,a,row") is null && PowerLog.ParseRow(null) is null);
+
+// ---- 更新清单签名与解析 ----
+var sha = new string('a', 64);
+var manifest = Encoding.UTF8.GetBytes(
+    $$"""{"version":"1.0.1","url":"https://example.com/WattLite-setup.exe","sha256":"{{sha}}"}""");
+using var testKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+var pubParams = testKey.ExportParameters(false);
+var pubX = pubParams.Q.X ?? throw new InvalidOperationException("missing public X");
+var pubY = pubParams.Q.Y ?? throw new InvalidOperationException("missing public Y");
+var pubRaw = new byte[65];
+pubRaw[0] = 0x04;
+pubX.CopyTo(pubRaw, 1);
+pubY.CopyTo(pubRaw, 33);
+var pubBase64 = Convert.ToBase64String(pubRaw);
+var signature = testKey.SignData(manifest, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+Check("更新签名有效", UpdateService.VerifySignature(manifest, Convert.ToBase64String(signature), pubBase64));
+var tampered = manifest.ToArray();
+tampered[0] ^= 1;
+Check("更新签名拒绝篡改", !UpdateService.VerifySignature(tampered, Convert.ToBase64String(signature), pubBase64));
+Check("更新签名拒绝坏公钥", !UpdateService.VerifySignature(manifest, Convert.ToBase64String(signature), "bad"));
+
+var parsedUpdate = UpdateService.ParseManifest(manifest, allowHttp: false);
+Check("更新清单解析", parsedUpdate is { } update && update.Version == "1.0.1"
+    && update.Sha256 == sha && update.ParsedVersion > new Version(1, 0, 0));
+var httpManifest = Encoding.UTF8.GetBytes(
+    $$"""{"version":"1.0.1","url":"http://example.com/WattLite-setup.exe","sha256":"{{sha}}"}""");
+Check("正式清单拒绝 HTTP", UpdateService.ParseManifest(httpManifest, allowHttp: false) is null);
+Check("测试清单允许 HTTP", UpdateService.ParseManifest(httpManifest, allowHttp: true) is not null);
+var badSha = Encoding.UTF8.GetBytes(
+    """{"version":"1.0.1","url":"https://example.com/WattLite-setup.exe","sha256":"abc"}""");
+Check("更新清单拒绝短 SHA", UpdateService.ParseManifest(badSha, allowHttp: false) is null);
 
 Console.WriteLine(failures == 0 ? "\nALL CHECKS PASSED" : $"\n{failures} CHECK(S) FAILED");
 return failures == 0 ? 0 : 1;

@@ -1,4 +1,4 @@
-WattLite 0.1.1 for Windows (x64)
+WattLite 1.0.0 for Windows (x64)
 ================================
 
 Portable build: keep every file in this folder together, then run WattLite.exe.
@@ -20,16 +20,21 @@ Getting started
   nvidia-smi. Virtual machines' virtual GPUs expose no power sensors.
 - The taskbar badge hides automatically when a fullscreen app covers the
   taskbar. Right-click the tray icon for Settings or Exit.
+- This portable build checks for updates but never replaces itself. When a new
+  version is available, open Settings and choose Open download page. Automatic
+  checks can be disabled there.
+- For hands-off updates, install the regular setup build instead.
 
 Local data
 ----------
 %APPDATA%\WattLite\
-  settings.json   appearance, language and sampling interval
+  settings.json   appearance, language, sampling and update settings
   history\        one CSV per day, aggregated per minute
   debug.log       minimal local diagnostics
 
-WattLite makes no network requests. Delete the folder above to reset the app
-or clear the history.
+WattLite's only network traffic is checking for updates. It sends no telemetry
+or personal data, and update checks can be disabled in Settings. Delete the
+folder above to reset the app or clear the history.
 
 Links
 -----
@@ -40,7 +45,7 @@ License:  MIT (see LICENSE)
 
 --
 
-WattLite 0.1.1 Windows 版（x64）
+WattLite 1.0.0 Windows 版（x64）
 ================================
 
 免安装版：请保持本目录所有文件在一起，双击 WattLite.exe 运行。
@@ -61,15 +66,19 @@ WattLite 是原生功率监视器：任务栏徽标和托盘图标显示 CPU + G
   NVIDIA 还会通过 nvidia-smi 读取功耗上限与显存。虚拟机的虚拟显卡不提供
   功率传感器。
 - 全屏应用覆盖任务栏时，任务栏徽标会自动隐藏。右键托盘图标可设置或退出。
+- 免安装版会检查更新，但不会替换自身。发现新版本时，请在设置里点
+  「打开下载页」手动下载。自动检查可在设置里关闭。
+- 如果需要全自动更新，请使用安装版。
 
 本地数据
 --------
 %APPDATA%\WattLite\
-  settings.json   外观、语言、采样间隔
+  settings.json   外观、语言、采样与更新设置
   history\        按天保存的分钟级 CSV
   debug.log       少量本地诊断日志
 
-WattLite 不发起任何网络请求。删除上述目录即可重置应用或清空历史。
+WattLite 的联网行为只有检查更新，不发送遥测或个人数据；自动检查可在设置里
+关闭。删除上述目录即可重置应用或清空历史。
 
 链接
 ----

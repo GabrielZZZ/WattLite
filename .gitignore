@@ -9,3 +9,5 @@ build/
 *.suo
 windows/publish/
 dist/
+*.pem
+*.key

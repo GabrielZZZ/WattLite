@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$PublishDir,
 
-    [string]$Version = "0.1.1",
+    [string]$Version = "1.0.0",
 
     [string]$OutputDir,
 

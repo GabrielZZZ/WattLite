@@ -3,7 +3,7 @@
 
 #define AppName "WattLite"
 #ifndef AppVersion
-  #define AppVersion "0.1.1"
+  #define AppVersion "1.0.0"
 #endif
 #ifndef PublishDir
   #define PublishDir "..\..\publish"
@@ -67,3 +67,12 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\WattLite.exe"; WorkingDir: "{
 ; ShellExecuteEx lets Windows show the UAC prompt for the admin-manifest app;
 ; CreateProcess fails with 740 when Setup's context is not elevated.
 Filename: "{app}\WattLite.exe"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent shellexec
+; Silent self-update: UpdateService starts Setup elevated with /UPDATE=1. The app has
+; already exited, so relaunch it once the files are replaced, without another UAC.
+Filename: "{app}\WattLite.exe"; Flags: nowait; Check: IsUpdate
+
+[Code]
+function IsUpdate: Boolean;
+begin
+  Result := ExpandConstant('{param:UPDATE|0}') = '1';
+end;

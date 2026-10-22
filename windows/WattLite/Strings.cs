@@ -70,6 +70,7 @@ public static class Strings
         ["{0} 块 · 共 {1} TB"] = "{0} drives · {1} TB total",
         ["内存与硬盘无功率传感器"] = "No power sensor for memory or drives",
         ["本地运行 · 无网络请求"] = "Runs locally · No network requests",
+        ["本地运行 · 更新检查可关"] = "Runs locally · Update check can be disabled",
         ["返回功率面板"] = "Back to power panel",
         ["设置"] = "Settings",
         ["退出 WattLite"] = "Quit WattLite",
@@ -111,6 +112,37 @@ public static class Strings
             "The panel reads once per second while open; sampling stops during sleep.",
         ["WattLite {0}\n只读功率数据，不控制任何硬件；历史按分钟聚合存本地 CSV，可随时删除。"] =
             "WattLite {0}\nReads power data only and never controls hardware. History is aggregated per minute into local CSV and can be deleted anytime.",
+        // 更新
+        ["软件更新"] = "Software updates",
+        ["开启"] = "On",
+        ["关闭"] = "Off",
+        ["自动检查新版本；安装版会下载并在重启时安装。更新检查只访问 GitHub、jsDelivr 与下载镜像，不发送个人数据。"] =
+            "Automatically checks for new versions; the installed build downloads and installs on restart. Update checks only contact GitHub, jsDelivr and download mirrors, and send no personal data.",
+        ["自动检查已开启。"] = "Automatic updates are on.",
+        ["自动检查已关闭。"] = "Automatic updates are off.",
+        ["检查更新"] = "Check for updates",
+        ["正在检查更新…"] = "Checking for updates…",
+        ["已是最新版本 v{0}。"] = "You're on the latest version, v{0}.",
+        ["正在下载 v{0}… {1}%"] = "Downloading v{0}… {1}%",
+        ["正在下载…"] = "Downloading…",
+        ["v{0} 已下载，重启后完成更新。"] = "v{0} is ready; restart to finish updating.",
+        ["重启并更新"] = "Restart and update",
+        ["下载更新失败，请稍后重试。"] = "Couldn't download the update. Try again later.",
+        ["更新包校验失败，请重新下载。"] = "The update failed verification. Please download it again.",
+        ["启动更新失败，请稍后重试。"] = "Couldn't start the update. Try again later.",
+        ["检查更新失败，请稍后重试。"] = "Couldn't check for updates. Try again later.",
+        ["重试"] = "Retry",
+        ["免安装版不支持自动更新，请手动下载新版本。"] =
+            "The portable build doesn't support auto-update. Download the new version manually.",
+        ["打开下载页"] = "Open download page",
+        ["正在启动更新…"] = "Starting update…",
+        ["正在更新…"] = "Updating…",
+        ["更新已准备好"] = "Update ready",
+        ["发现新版本"] = "Update available",
+        ["v{0} 已下载，点击打开设置并重启更新。"] =
+            "v{0} is ready. Click to open settings and restart.",
+        ["v{0} 可用，点击打开设置下载。"] =
+            "v{0} is available. Click to open settings and download.",
         // 托盘
         ["WattLite 功率监测"] = "WattLite power monitor",
         ["主要部件"] = "main parts",

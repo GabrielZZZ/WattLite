@@ -8,6 +8,7 @@ public sealed class Settings
     public string Lang { get; set; } = "zh";
     public string Theme { get; set; } = "dark";
     public double Interval { get; set; } = 2;
+    public bool AutoUpdate { get; set; } = true;
 
     public static Settings Current { get; private set; } = new();
 

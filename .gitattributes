@@ -1,0 +1,3 @@
+# Signed update manifests must keep their exact bytes.
+docs/updates/*.json -text
+docs/updates/*.sig -text
