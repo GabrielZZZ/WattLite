@@ -1,0 +1,10 @@
+{
+    "version":  "1.0.0",
+    "url":  "https://github.com/GabrielZZZ/WattLite/releases/download/v1.0.0-windows/WattLite-1.0.0-windows-x64-setup.exe",
+    "mirror":  "https://ghfast.top/https://github.com/GabrielZZZ/WattLite/releases/download/v1.0.0-windows/WattLite-1.0.0-windows-x64-setup.exe",
+    "sha256":  "970089d8ed6b2c22cf7eb8bc0550cbdc938df5ef77a003c85346e25b1ed3b600",
+    "min_os":  "10.0.17763",
+    "published":  "2026-10-22T08:22:11Z",
+    "notes_zh":  "新增签名自动更新：后台检查、SHA-256 校验、静默安装并自动重启。新增 AMD/Intel 显卡功率支持与启动可见性修复。",
+    "notes_en":  "Signed automatic updates: background checks, SHA-256 verification, silent install and restart. Adds AMD/Intel GPU power support and launch visibility fixes."
+}

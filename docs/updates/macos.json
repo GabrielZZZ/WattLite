@@ -1,0 +1,11 @@
+{
+    "version":  "2.2",
+    "build":  5,
+    "url":  "https://github.com/GabrielZZZ/WattLite/releases/download/v2.2/WattLite-2.2.zip",
+    "mirror":  "https://ghfast.top/https://github.com/GabrielZZZ/WattLite/releases/download/v2.2/WattLite-2.2.zip",
+    "sha256":  "fc71b77c2042497df2262efc21acd442ace741c8331d7a5f2f9a9ca10f8212a9",
+    "min_os":  "14.0",
+    "published":  "2026-10-22T08:15:03Z",
+    "notes_zh":  "新增签名自动更新：后台检查、签名与 SHA-256 校验、下载后一键重启完成升级。",
+    "notes_en":  "Signed automatic updates: background checks, signature and SHA-256 verification, then a one-click restart to install."
+}
