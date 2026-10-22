@@ -1,34 +1,48 @@
 # WattLite
 
 <p align="center">
-  <b>macOS 菜单栏功率监视器。</b><br>
-  只回答两个问题：<br>
-  这台 Mac 此刻吃进多少瓦，<br>
-  电池此刻净充 / 净放多少瓦。
+  <b>实时功率，一眼掌握——现在支持 macOS 与 Windows。</b><br>
+  只回答一个问题：<br>
+  这台机器此刻到底吃进多少瓦？
 </p>
 
 <p align="center">
-  <a href="https://github.com/GabrielZZZ/WattLite/releases/latest"><img alt="release" src="https://img.shields.io/github/v/release/GabrielZZZ/WattLite?color=blue"></a>
+  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v2.1"><img alt="macOS 发布" src="https://img.shields.io/badge/macOS-v2.1-blue"></a>
+  <a href="https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows"><img alt="Windows 发布" src="https://img.shields.io/badge/Windows-v0.1.0%20pre--release-orange"></a>
   <img alt="license" src="https://img.shields.io/badge/license-MIT-green">
-  <img alt="platform" src="https://img.shields.io/badge/macOS-14%2B-blue">
-  <img alt="arch" src="https://img.shields.io/badge/arch-arm64%20(Apple%20Silicon)-black">
-  <img alt="deps" src="https://img.shields.io/badge/dependencies-0-brightgreen">
+  <img alt="platform" src="https://img.shields.io/badge/platform-macOS%2014%2B%20%7C%20Windows%2010%2F11-blue">
   <img alt="network" src="https://img.shields.io/badge/network-none-orange">
 </p>
 
 <p align="center"><a href="README.md">English</a> · <b>简体中文</b></p>
 
-> **Windows 版**：原生 WPF 实现位于 [`windows/`](windows/)，可从 [Windows 发布页](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) 下载。
-
 <p align="center">
-  <img src="docs/screenshots/live.gif" width="340" alt="实时面板">
+  <img src="docs/screenshots/panel.png" width="320" alt="macOS 功率面板">
+  <img src="docs/screenshots/windows/panel.png" width="320" alt="Windows 功率面板">
 </p>
+<p align="center"><sub>macOS 菜单栏面板 · Windows 任务栏面板</sub></p>
 
-菜单栏常驻（`LSUIElement`，无 Dock 图标），点开是功率面板。不控制充电、不发送任何网络请求、不采集序列号。
+WattLite 是 macOS 与 Windows 上的原生功率监视器：显示机器此刻的真实功耗、保留一段趋势，并按部件拆开看——不控制硬件、不读取序列号、不发任何网络请求。
 
-> 大数字、趋势线和粒子流都跟着机器真实功耗走。SMC 键 `PDTR` 读的是机器*内部*的输入功率，插座端会更高一些，因为适配器自身也在耗电。
+- **macOS** 直接通过 I/O Kit 读取 SMC 输入功率和电池净功率。
+- **Windows** 把 LibreHardwareMonitor 的 CPU 封装功率与 `nvidia-smi` 的 NVIDIA GPU 功率相加；主数字带 `≈`，因为这是主要部件之和，不是插座端功率。
 
-## 菜单栏
+## 平台概览
+
+| | macOS | Windows |
+| --- | --- | --- |
+| 状态 | v2.1，稳定版 | v0.1.0，首个版本（pre-release） |
+| 常驻位置 | 菜单栏（`LSUIElement`，无 Dock 图标） | 托盘左侧的任务栏徽标 |
+| 主数字 | SMC 输入功率 / 电池净功率 | CPU 封装 + NVIDIA GPU 功率（`≈`） |
+| 卡片 | 适配器、本机、电池、会话能量 | CPU、GPU、内存、每块物理盘 |
+| 额外信息 | 适配器/机型产品图、电池视图 | 盘符、逐盘写入速度、手动明暗 |
+| 要求 | Apple Silicon、macOS 14+ | Windows 10 1809+/11 x64、NVIDIA 驱动、管理员 |
+| 下载 | `WattLite-2.1.dmg` | `WattLite-0.1.0-windows-x64.zip` |
+| 源码 | [`Sources/`](Sources) | [`windows/`](windows) |
+
+## macOS
+
+### 菜单栏
 
 一个等宽数字，宽度固定，跳数时不左右挤动。
 
@@ -40,14 +54,14 @@
   <img src="docs/screenshots/menubar.png" width="320" alt="菜单栏">
 </p>
 
-## 面板
+### 面板
 
 <p align="center">
-  <img src="docs/screenshots/panel.png" width="330" alt="功率面板">
+  <img src="docs/screenshots/live.gif" width="330" alt="实时面板">
   <img src="docs/screenshots/panel-battery.png" width="330" alt="电池供电状态">
 </p>
 
-<p align="center"><sub>左：接电状态 · 右：电池供电状态</sub></p>
+<p align="center"><sub>左：实时面板 · 右：电池供电状态</sub></p>
 
 | 区块 | 内容 | 来源 |
 | --- | --- | --- |
@@ -68,7 +82,7 @@
 
 界面完整支持英文，设置里切换立即生效、无需重启。
 
-## 设置
+### 设置
 
 <p align="center">
   <img src="docs/screenshots/settings.png" width="340" alt="设置">
@@ -83,20 +97,22 @@
 
 面板展开时固定每秒采样，睡眠时停止采集并在唤醒后重新采样。
 
-## 安装
+### 安装
+
+#### 直接下载（推荐）
 
 从 [**Releases**](https://github.com/GabrielZZZ/WattLite/releases/latest) 下载 `WattLite-2.1.dmg`，打开后把 WattLite 拖进 `Applications`。
 
 首次打开需要放行一次：项目没有 Apple Developer 账号，因此是 ad-hoc 签名、未经公证，Gatekeeper 会拦下所有从浏览器下载的副本。二选一：
 
-- **系统设置 → 隐私与安全性**，在"已阻止使用 WattLite"处点 **仍要打开**；
+- **系统设置 → 隐私与安全性**，在“已阻止使用 WattLite”处点 **仍要打开**；
 - 终端去掉隔离标记：`xattr -dr com.apple.quarantine /Applications/WattLite.app`
 
 也可以用 `WattLite-2.1.zip`，但**必须双击或用 `ditto -x -k` 解压**——`unzip` 会把资源派生数据解成一堆 `._` 文件留在包里，签名封条当场失效。
 
 装好后菜单栏出现 `⚡ 67W · 入 10.2 W`，点它展开面板。设置里可打开**登录时启动**。
 
-## 从源码构建
+#### 从源码构建
 
 ```bash
 git clone https://github.com/GabrielZZZ/WattLite.git && cd WattLite
@@ -108,7 +124,7 @@ bash build.sh release                # 额外产出 build/WattLite-<版本>.{dmg
 
 只需要 Xcode 命令行工具（`xcode-select --install`）。没有 Xcode 工程、没有 SwiftPM、没有第三方依赖。要求 Apple Silicon + macOS 14+。
 
-## 自检
+#### 自检
 
 自检是一个纯 `precondition` 的可执行程序，覆盖功率解码、边界与陈旧数据、会话能量积分、机型标识符查表。
 
@@ -117,9 +133,9 @@ build/checks             # PASS: ...
 build/checks --live      # 再采 8 秒真实数据，对照 SMC 与 V×I
 ```
 
-## 机型与产品图自动联动
+### 机型与产品图自动联动
 
-`system_profiler` 只给泛称（"MacBook Pro"），精确营销名由 `Sources/MacModels.swift` 的标识符查表得到（72 项，来源为 Apple 官方机型识别页）。产品图按标识符配图，因为同一营销名会有不同外观（M4 与 M4 Pro/Max 的机器图不同）。
+`system_profiler` 只给泛称（“MacBook Pro”），精确营销名由 `Sources/MacModels.swift` 的标识符查表得到（72 项，来源为 Apple 官方机型识别页）。产品图按标识符配图，因为同一营销名会有不同外观（M4 与 M4 Pro/Max 的机器图不同）。
 
 查找顺序是**用户目录优先，bundle 兜底**，逐个键尝试：
 
@@ -135,7 +151,7 @@ Contents/Resources/Adapters/<key>.png                       # 内置的
 
 第三方充电头在 USB PD 里通常只报 `pd charger`，无法自动识别品牌型号，因此适配器卡上的铅笔按钮支持自行填写名称 / 型号 / 协议并上传产品图，存进 `adapters.json`，用户条目覆盖内置条目。
 
-## 历史数据
+### 历史数据
 
 按分钟聚合写本地 CSV：
 
@@ -146,21 +162,96 @@ Contents/Resources/Adapters/<key>.png                       # 内置的
 
 CSV 本身就是导出格式，没有数据库、没有后台上传进程；删掉目录即清空。
 
+## Windows
+
+<p align="center">
+  <img src="docs/screenshots/windows/taskbar.png" width="720" alt="WattLite 任务栏徽标">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/windows/settings.png" width="320" alt="Windows 设置">
+</p>
+<p align="center"><sub>任务栏徽标 · 明暗外观与语言设置</sub></p>
+
+Windows 版是原生 WPF 程序。它在托盘左侧挂一个透明置顶徽标，不抢焦点、不盖时钟、没有窗口边框；点开是与 macOS 版同风格的面板。
+
+### 功能
+
+- **任务栏徽标**：实时显示 CPU 封装 + GPU 功率。跟随 Windows 任务栏的明暗状态；全屏应用盖住任务栏时自动隐藏。
+- **功率面板**：大数字、10 分钟趋势、CPU / GPU / 内存卡片，以及每块物理盘独立卡片——各自的厂商 logo、型号、容量、盘符（`C:`、`D: E:`…）和写入速度。
+- **手动明暗外观**：设置里切换深色 / 浅色，整个面板立即生效并持久化。
+- **中英双语**：设置里切换，无需重启。
+- **纯本地历史**：分钟级 CSV，无网络请求、无遥测。
+
+### 安装
+
+从 [Windows Release](https://github.com/GabrielZZZ/WattLite/releases/tag/v0.1.0-windows) 下载 `WattLite-0.1.0-windows-x64.zip`，解压后运行 `WattLite.exe`。自包含，无需安装 .NET。
+
+- Windows 10 1809+ / Windows 11，64 位。
+- **需要管理员权限**（CPU 封装功率走 LibreHardwareMonitor/PawnIO，磁盘计数器走 `IOCTL_DISK_PERFORMANCE`），UAC 弹窗点「是」。
+- 未做代码签名。SmartScreen 提示「Windows 已保护你的电脑」时，点「更多信息」→「仍要运行」。
+- GPU 功率、温度、功耗上限和显存需要 NVIDIA 驱动及 `nvidia-smi`；没有独显时 CPU 侧仍可用。
+
+### 从源码构建
+
+```powershell
+dotnet build windows/WattLite/WattLite.csproj -c Release
+dotnet run --project windows/Checks/Checks.csproj   # nvidia-smi 解析冒烟测试
+
+dotnet publish windows/WattLite/WattLite.csproj -c Release -r win-x64 `
+  --self-contained true -p:PublishSingleFile=false -p:DebugType=None -o publish
+```
+
+构建机需要 .NET 8 SDK。发布目录就是 Release 里的 zip 内容；更多说明见 [`windows/README.md`](windows/README.md)。
+
+### Windows 历史数据
+
+```text
+%APPDATA%\WattLite\history\YYYY-MM-DD.csv
+# ts,cpu_w,gpu_w,temperature
+```
+
+设置在同目录的 `settings.json`。删掉 `%APPDATA%\WattLite` 即重置。
+
+## 隐私与数据
+
+两个平台都不发网络请求、不采集遥测、不需要账号、不读取序列号。设置和历史只留在本机：macOS 在 `~/Library/Application Support/WattLite`，Windows 在 `%APPDATA%\WattLite`。删掉对应目录即清空。
+
 ## 已知限制
+
+### macOS
 
 - **未签名**（ad-hoc 签名，无 Apple Developer 账号，因此也无法公证）。从浏览器下载的 `.dmg` / `.zip` 首次打开会被 Gatekeeper 拦，见上文「安装」；自己 `bash build.sh` 编译出的副本不受影响。
 - **精度未经外部功率计校准**。`PDTR` 是机器侧输入功率，不是插座端功率。
 - **只支持 Apple Silicon**：`build.sh` 的编译目标写死 `arm64-apple-macosx14.0`，要跑 Intel 得自己加通用二进制目标。
 - **素材缺口**：30 W / 240 W 档苹果适配器暂无公开原图；适配器 `Model` 十六进制 → A 编号的对照表目前只有 2 条经实测确认（`0x7016 → A2518`、`0x7002 → A2166`），没有权威公开来源，因此不猜。
 
+### Windows
+
+- 主数字是**CPU 封装 + GPU**，不含主板、内存、硬盘和电源转换损耗，不是插座端功率，所以带 `≈`。
+- GPU 读数目前需要 **NVIDIA 显卡与驱动**（`nvidia-smi`）；没有独显时 CPU、内存和磁盘读数仍可用。
+- 需要**管理员权限**，且可执行文件未签名，首次运行可能遇到 SmartScreen 提示。
+- 暂无安装程序，Release 是自包含 `.zip`。
+- 盘符来自 WMI 分区关联；存储空间、动态磁盘等特殊布局可能无法映射全部卷。
+- Windows 版目前是 **0.1.0**，标记为 pre-release，边用边打磨。
+
 ## 更新记录
 
-**v2.1** — 会话能量改用生活单位。
+**Windows v0.1.0** — 首个 Windows 原生版本（pre-release）。
+
+- 透明任务栏徽标，实时显示 CPU 封装 + GPU 功率；全屏应用盖住任务栏时自动隐藏
+- macOS 风格面板：大数字、10 分钟趋势、CPU / GPU / 内存 / 逐盘卡片，带厂商 logo
+- 每块物理盘显示盘符（`C:`、`D: E:`…）与各自的写入速度
+- 手动明暗外观、中英双语、设置持久化
+- 历史记录按分钟写入 `%APPDATA%\WattLite\history`，纯本地，无网络请求
+- 自包含 x64 构建，需要管理员权限
+
+**macOS v2.1** — 会话能量改用生活单位。
 
 - 能量卡右下角新增一条换算，9 档取本次能量达到过的最高一档（香蕉 → 5 号电池 → LED 灯 → 烧水 → 电视 → 吹风机 → 度电 → 电动车公里数），计数恒 ≥ 1
 - 中英文界面都有这条；VoiceOver 读到的是剥掉 emoji 的纯文字
 
-**v2.0** — 第一个正式发行版，提供 `.dmg` / `.zip` 直接下载安装。
+**macOS v2.0** — 第一个正式发行版，提供 `.dmg` / `.zip` 直接下载安装。
 
 - 本机型号自动识别到精确营销名（72 项标识符查表），并按标识符自动配官方产品图
 - 苹果适配器内置 9 档功率图，统一 600×600 透明方图、只保留机身
@@ -171,4 +262,8 @@ CSV 本身就是导出格式，没有数据库、没有后台上传进程；删�
 
 ## 许可
 
-MIT，见 [LICENSE](LICENSE)。`Assets/Adapters/` 内的产品图为 Apple 官方素材，版权归 Apple Inc.
+MIT，见 [LICENSE](LICENSE)。
+
+- macOS 的 `Assets/Adapters/` 产品图为 Apple 官方素材，版权归 Apple Inc.
+- Windows 的 `windows/WattLite/Assets/vendors/` 厂商 logo 为各自商标，仅用于识别已安装的硬件。
+- Windows 版依赖 [LibreHardwareMonitorLib](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)（MPL-2.0），并通过 NVIDIA `nvidia-smi` 读取 GPU 数据。
