@@ -17,6 +17,8 @@
 
 <p align="center"><b>English</b> · <a href="README.zh-CN.md">简体中文</a> · <a href="https://gabrielzzz.github.io/WattLite/">Website</a></p>
 
+<p align="center">Slow downloads in mainland China? <a href="https://gabrielzzz.github.io/WattLite/?line=mirror#download"><b>Use the China mirror line</b></a> (third-party proxy, SHA-256 verifiable).</p>
+
 <p align="center">
   <img src="docs/screenshots/panel-en.png" width="320" alt="macOS power panel">
   <img src="docs/screenshots/windows/panel-en.png" width="320" alt="Windows power panel">

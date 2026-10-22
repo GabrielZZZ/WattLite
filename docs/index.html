@@ -75,6 +75,7 @@
 
           <p class="hero-meta"><span data-en="Free &amp; open source" data-zh="免费开源">Free &amp; open source</span><span class="sep">·</span><span>MIT</span><span class="sep">·</span><span data-en="No telemetry" data-zh="无遥测">No telemetry</span></p>
           <p class="hero-note" data-en="Prefer the details? <a href='#download'>Compare platforms</a>" data-zh="想先看细节？<a href='#download'>对比平台</a>">Prefer the details? <a href="#download">Compare platforms</a></p>
+          <p class="hero-mirror"><a href="#download" data-mirror-jump><span data-en="Slow download in mainland China?" data-zh="中国大陆下载慢？">Slow download in mainland China?</span><span class="hero-mirror-go" data-en="Use the China mirror →" data-zh="使用国内加速 →">Use the China mirror →</span></a></p>
         </div>
 
         <div class="stage" aria-label="WattLite running on macOS and Windows">
@@ -272,6 +273,18 @@
           <p class="kicker" data-en="Download" data-zh="下载">Download</p>
           <h2 data-en="Choose your platform." data-zh="选择你的平台。">Choose your platform.</h2>
           <p class="section-sub" data-en="Both builds are free, open source, and local-only. Downloads are served by GitHub Releases." data-zh="两个平台都免费开源、纯本地运行。下载由 GitHub Releases 提供。">Both builds are free, open source, and local-only. Downloads are served by GitHub Releases.</p>
+          <div class="line-picker">
+            <span class="line-label" id="lineLabel" data-en="Download line" data-zh="下载线路">Download line</span>
+            <div class="line-switch" role="group" aria-labelledby="lineLabel">
+              <button type="button" class="line-btn" data-line="official" aria-pressed="true"><span data-en="GitHub" data-zh="GitHub 官方">GitHub</span></button>
+              <button type="button" class="line-btn" data-line="mirror" aria-pressed="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z"/></svg>
+                <span data-en="China mirror" data-zh="国内加速">China mirror</span>
+              </button>
+            </div>
+          </div>
+          <p class="line-hint" data-line-hint="official" data-en="Official GitHub Releases. Usually the fastest option outside mainland China." data-zh="GitHub 官方 Release，海外网络通常最快。">Official GitHub Releases. Usually the fastest option outside mainland China.</p>
+          <p class="line-hint" data-line-hint="mirror" hidden data-en="Third-party proxy (ghfast.top) forwarding the same GitHub file. Check the SHA-256 below after downloading." data-zh="由第三方代理（ghfast.top）转发 GitHub 原文件，内容一致；下载后请核对下方 SHA-256。">Third-party proxy (ghfast.top) forwarding the same GitHub file. Check the SHA-256 below after downloading.</p>
         </div>
 
         <div class="download-grid">

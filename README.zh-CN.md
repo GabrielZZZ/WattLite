@@ -17,6 +17,8 @@
 
 <p align="center"><a href="README.md">English</a> · <b>简体中文</b> · <a href="https://gabrielzzz.github.io/WattLite/">官网</a></p>
 
+<p align="center">中国大陆下载慢？<a href="https://gabrielzzz.github.io/WattLite/?line=mirror#download"><b>使用国内加速线路</b></a>（第三方代理，可核对 SHA-256）</p>
+
 <p align="center">
   <img src="docs/screenshots/panel.png" width="320" alt="macOS 功率面板">
   <img src="docs/screenshots/windows/panel.png" width="320" alt="Windows 功率面板">

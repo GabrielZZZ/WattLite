@@ -85,6 +85,48 @@
     body.classList.add("is-win");
   }
 
+  /* Download line: official GitHub or the mainland-China proxy. */
+  const GITHUB_RELEASE = "https://github.com/GabrielZZZ/WattLite/releases/download/";
+  const MIRROR_PREFIX = "https://ghfast.top/";
+  const releaseLinks = Array.from(
+    document.querySelectorAll(`a[href^="${GITHUB_RELEASE}"]`)
+  );
+  const lineButtons = Array.from(document.querySelectorAll(".line-btn"));
+  const lineHints = Array.from(document.querySelectorAll(".line-hint"));
+
+  releaseLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (!href) return;
+    link.dataset.officialHref = href;
+    link.dataset.mirrorHref = MIRROR_PREFIX + href;
+  });
+
+  function setDownloadLine(line) {
+    const useMirror = line === "mirror";
+    releaseLinks.forEach((link) => {
+      const target = useMirror ? link.dataset.mirrorHref : link.dataset.officialHref;
+      if (target) link.setAttribute("href", target);
+    });
+    lineButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.line === line));
+    });
+    lineHints.forEach((hint) => {
+      hint.hidden = hint.dataset.lineHint !== line;
+    });
+  }
+
+  lineButtons.forEach((button) => {
+    button.addEventListener("click", () => setDownloadLine(button.dataset.line || "official"));
+  });
+
+  document.querySelectorAll("[data-mirror-jump]").forEach((link) => {
+    link.addEventListener("click", () => setDownloadLine("mirror"));
+  });
+
+  setDownloadLine(
+    new URLSearchParams(window.location.search).get("line") === "mirror" ? "mirror" : "official"
+  );
+
   /* Checksum copy. */
   function copyText(text) {
     if (navigator.clipboard && window.isSecureContext) {

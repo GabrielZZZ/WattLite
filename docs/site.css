@@ -449,6 +449,34 @@ body.is-win .platform-card.js-win {
   border-bottom-color: var(--teal);
 }
 
+.hero-mirror {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+}
+
+.hero-mirror a {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.hero-mirror a:hover {
+  color: var(--text);
+}
+
+.hero-mirror-go {
+  color: var(--teal);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hero-mirror a:hover .hero-mirror-go {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ---------- Hero stage ---------- */
 
 .stage {
@@ -1093,6 +1121,79 @@ html[lang="zh-CN"] .mock-lang .mock-zh-opt {
 }
 
 /* ---------- Download ---------- */
+
+.line-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.line-label {
+  color: var(--muted-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+html[lang="zh-CN"] .line-label {
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.line-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.line-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.line-btn svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.line-btn:hover {
+  color: var(--text);
+}
+
+.line-btn[aria-pressed="true"] {
+  background: rgba(58, 214, 203, 0.14);
+  color: var(--teal);
+  box-shadow: inset 0 0 0 1px rgba(58, 214, 203, 0.26);
+}
+
+.line-hint {
+  max-width: 58ch;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.line-hint[hidden] {
+  display: none;
+}
 
 .download-grid {
   display: grid;
