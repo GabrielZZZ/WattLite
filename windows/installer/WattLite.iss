@@ -64,4 +64,6 @@ Name: "{autoprograms}\{#AppName}"; Filename: "{app}\WattLite.exe"; WorkingDir: "
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\WattLite.exe"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\WattLite.exe"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+; ShellExecuteEx lets Windows show the UAC prompt for the admin-manifest app;
+; CreateProcess fails with 740 when Setup's context is not elevated.
+Filename: "{app}\WattLite.exe"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent shellexec

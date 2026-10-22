@@ -10,6 +10,8 @@ Getting started
 - WattLite needs administrator rights. Windows only exposes CPU package power,
   the PawnIO sensor driver and per-disk performance counters to elevated
   processes, so accept the UAC prompt when starting the app.
+- The panel opens on launch. Close it and WattLite keeps running in the
+  taskbar/tray; click the taskbar badge or tray icon to open it again.
 - GPU power, temperature, power limit and VRAM require an NVIDIA GPU with a
   current driver and nvidia-smi on PATH or in the driver directory.
 - Click the gear button in the panel for appearance, language and sampling
@@ -52,6 +54,8 @@ WattLite 是原生功率监视器：任务栏徽标和托盘图标显示 CPU + G
 --------
 - 启动需要管理员权限。Windows 只向提权进程开放 CPU 封装功率、PawnIO 传感器
   驱动和逐盘性能计数器，因此启动时请在 UAC 弹窗点「是」。
+- 启动后会直接打开面板。关闭面板后程序继续在任务栏/托盘运行，点击任务栏
+  徽标或托盘图标可再次打开。
 - GPU 功率、温度、功耗上限与显存需要 NVIDIA 显卡及较新的驱动，并确保
   nvidia-smi 在 PATH 或驱动目录中。
 - 面板右下角的齿轮按钮可设置外观、界面语言和采样间隔，修改立即生效。

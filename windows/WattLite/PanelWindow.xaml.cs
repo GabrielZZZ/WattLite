@@ -20,6 +20,7 @@ public partial class PanelWindow : Window
     private readonly Stopwatch _clock = Stopwatch.StartNew();
     private readonly List<(double X, double Speed, double Radius, double Phase)> _particles = new();
     private bool _particlesRunning;
+    private DateTime _deactivateGraceUntil;
 
     // 任务栏嵌入徽标的锚点（物理像素），用于把面板钉在徽标旁
     public Func<Rect?>? AnchorProvider;
@@ -56,8 +57,11 @@ public partial class PanelWindow : Window
         SetSettingsVisible(true);
     }
 
-    public void ShowPanel()
+    public void ShowPanel(bool startup = false)
     {
+        if (startup)
+            _deactivateGraceUntil = DateTime.UtcNow.AddSeconds(3);
+        DebugLog($"SHOW startup={startup}");
         PrepareGeometry();
         SetSettingsVisible(false);
         _store.SetVisible(true);
@@ -72,6 +76,7 @@ public partial class PanelWindow : Window
 
     private void HidePanel()
     {
+        DebugLog("HIDE");
         Hide();
         _store.SetVisible(false);
     }
@@ -113,7 +118,16 @@ public partial class PanelWindow : Window
             : 1.0;
     }
 
-    private void OnDeactivated(object sender, EventArgs e) => _hideTimer.Start();
+    private void OnDeactivated(object sender, EventArgs e)
+    {
+        if (DateTime.UtcNow < _deactivateGraceUntil)
+        {
+            DebugLog("DEACTIVATE ignored");
+            return;
+        }
+        DebugLog("DEACTIVATE");
+        _hideTimer.Start();
+    }
 
     private void OnGearClick(object sender, RoutedEventArgs e) => SetSettingsVisible(SettingsPane.Visibility != Visibility.Visible);
 

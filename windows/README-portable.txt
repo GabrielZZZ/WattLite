@@ -11,6 +11,8 @@ Getting started
 ---------------
 - Accept the UAC prompt. Windows only exposes CPU package power, the PawnIO
   sensor driver and per-disk performance counters to elevated processes.
+- The panel opens on launch. Close it and WattLite stays in the taskbar/tray;
+  click the taskbar badge or tray icon to open it again.
 - If SmartScreen says "Windows protected your PC", choose More info > Run anyway.
   This build is not code-signed.
 - GPU power, temperature, power limit and VRAM require an NVIDIA GPU with a
@@ -50,6 +52,8 @@ WattLite 是原生功率监视器：任务栏徽标和托盘图标显示 CPU + G
 --------
 - 请在 UAC 弹窗点「是」。Windows 只向提权进程开放 CPU 封装功率、PawnIO
   传感器驱动和逐盘性能计数器。
+- 启动后会直接打开面板。关闭面板后程序继续在任务栏/托盘运行，点击任务栏
+  徽标或托盘图标可再次打开。
 - 若 SmartScreen 提示「Windows 已保护你的电脑」：更多信息 → 仍要运行。
   本构建未做代码签名。
 - GPU 功率、温度、功耗上限与显存需要 NVIDIA 显卡及较新的驱动，并确保
